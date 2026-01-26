@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizador de Vagas</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Visualizador de Vagas</h1>
+            <div class="search-container">
+                <input 
+                    type="text" 
+                    id="searchInput" 
+                    placeholder="Buscar por nome, email, localização, telefone ou título da vaga..."
+                    autocomplete="off"
+                >
+                <span class="search-icon">🔍</span>
+            </div>
+        </header>
+
+        <main>
+            <div id="vacanciesContainer" class="vacancies-container">
+                <!-- Vacancy groups will be rendered here -->
+            </div>
+            <div id="noResults" class="no-results" style="display: none;">
+                <p>Nenhum resultado encontrado. Tente um termo de busca diferente.</p>
+            </div>
+        </main>
+
+        <div id="toast" class="toast"></div>
+    </div>
+
+    <script src="applicants-data.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
