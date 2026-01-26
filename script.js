@@ -191,26 +191,42 @@ function createCandidateRow(applicant) {
 async function copyToClipboard(element) {
     let value = element.dataset.value;
     const isEmail = element.classList.contains('copyable-email');
-    
-    // Add quotes for email
+
     if (isEmail && value !== 'N/D') {
         value = `"${value}"`;
     }
-    
+
+    // Tentativa 1 — Clipboard API moderna
     try {
         await navigator.clipboard.writeText(value);
         showToast(`Copiado: ${value}`);
-        
-        // Visual feedback
-        element.classList.add('copied');
-        setTimeout(() => {
-            element.classList.remove('copied');
-        }, 2000);
-    } catch (error) {
-        console.error('Falha ao copiar:', error);
-        showToast('Falha ao copiar para a área de transferência');
+        markCopied(element);
+        return;
+    } catch (e) {
+        // segue para fallback
     }
+
+    // Tentativa 2 — execCommand
+    const execOk = copyWithExecCommand(value);
+    if (execOk) {
+        showToast(`Copiado: ${value}`);
+        markCopied(element);
+        return;
+    }
+
+    // Tentativa 3 — seleção manual
+    selectForManualCopy(element);
+    showToast('Texto selecionado. Use Ctrl+C');
 }
+
+function markCopied(element) {
+    element.classList.add('copied');
+    setTimeout(() => {
+        element.classList.remove('copied');
+    }, 2000);
+}
+
+
 
 // Show toast notification
 function showToast(message) {
@@ -305,3 +321,36 @@ function escapeHtml(text) {
 function escapeRegex(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
+
+function copyWithExecCommand(text) {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+
+    textarea.style.position = 'fixed';
+    textarea.style.top = '-1000px';
+    textarea.style.left = '-1000px';
+
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+
+    let success = false;
+    try {
+        success = document.execCommand('copy');
+    } catch {
+        success = false;
+    }
+
+    document.body.removeChild(textarea);
+    return success;
+}
+
+function selectForManualCopy(element) {
+    const range = document.createRange();
+    range.selectNodeContents(element);
+
+    const selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+}
+
