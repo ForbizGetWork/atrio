@@ -71,10 +71,13 @@ const AuthService = {
                 // Tenta extrair o usuario (pode variar a estrutura)
                 this.state.user = data.username || data.subject || null;
                 this.state.tenant = data.tenantDomain || null;
+            }
 
-                // O token geralmente não fica aqui, mas pode estar em outro lugar ou cookies
-                // Para simplificar, se acharmos o user info, assumimos que estamos no contexto
-                // Em uma injeção real, interceptaríamos o XHR como a extensão faz
+            // NOVO: Ler token injetado pela extensão
+            const seniorToken = localStorage.getItem('SENIOR_TOKEN');
+            if (seniorToken) {
+                this.state.token = seniorToken; // Já vem com 'Bearer '
+                console.log('🔑 AuthService: Token capturado do localStorage');
             }
         } catch (e) {
             console.log('🔐 AuthService: Falha ao ler localStorage (Normal fora da Senior).');
