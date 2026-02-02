@@ -1,1 +1,56 @@
-const APPLICANTS_DATA = [{"body":{"//":"--- DADOS DO CANDIDATO (MANTIDOS DO ORIGINAL) ---","headOffice":{"id":"e1e11a5f-c7a9-4f14-9410-aeef3d04a61c","externalId":"B353032E36B5408EAC4632458BA81E0A","name":"ATRIO HOTEIS SA","tradingName":"Atrio Hoteis SA","code":1},"branchOffice":{"id":"c7c39162-844f-439d-aaf1-5dee7c97f674","externalId":"C964EDC57CA24457AF6E4FB72C820EB0","name":"ATRIO SA - Novotel Santos Gonzaga","tradingName":"Novotel Santos Gonzaga","code":66},"vacancy_senior_data":{"id":"9280ca6a-761c-42d9-b334-541ca1d1794a","title":"Recepcionista Jr.","location":"Santos - SP","code":3140},"id":12125792,"status":1,"hired":null,"talent":{"id":4586689,"user":{"id":3463478,"name":"Marina Amaragi Da Silva Souza","email":"marynaamaragi@gmail.com","user_type":"Talent"},"telephone":"+55 13 99685 0361"},"channel":"indeed","vacancy":{"id":128849,"title":"Recepcionista Jr. (Cód. 3140)","internal_code":"9280ca6a-761c-42d9-b334-541ca1d1794a","company_id":6117},"applicant":"Marina Amaragi Da Silva Souza","recrutei_vacancy_id":"128849"},"applicant":"Marina Amaragi Da Silva Souza","vacancy_title":"Recepcionista Jr. (Cód. 3140)"}];
+// Auto-generated applicants data
+// Last updated: 2026-02-02 16:52
+
+const APPLICANTS_DATA = [
+    {
+        "body": {
+            "id": 12156527,
+            "hired": null,
+            "index": 0,
+            "match": null,
+            "rated": null,
+            "stars": 0,
+            "medias": [],
+            "status": 1,
+            "headOffice": {
+                "id": "e1e11a5f-c7a9-4f14-9410-aeef3d04a61c",
+                "code": 1,
+                "name": "ATRIO HOTEIS SA",
+                "externalId": "B353032E36B5408EAC4632458BA81E0A",
+                "tradingName": "Atrio Hoteis SA"
+            },
+            "branchOffice": {
+                "id": "843060c9-5864-4cf9-9eff-e856ddead51d",
+                "code": 25,
+                "name": "ATRIO SA - Ibis Jundiai",
+                "externalId": "47123BAEA78A4AC1AA04CD424B125E48",
+                "tradingName": "Ibis Jundiai"
+            },
+            "talent": {
+                "id": 3913326,
+                "age": 30,
+                "pcd": false,
+                "ssn": "364.867.918-02",
+                "user": {
+                    "id": 2893506,
+                    "city": "São Paulo, SP, Brasil",
+                    "name": "Kaique Araujo Moreira",
+                    "email": "kaiquemoreira013@gmail.com",
+                    "role_id": 3,
+                    "user_type": "Talent",
+                    "first_name": "Kaique",
+                    "abbreviated_name": "Kaique A. Moreira"
+                },
+                "address": {
+                    "location": "São Paulo, SP, Brasil"
+                },
+                "telephone": "13991310345"
+            },
+            "created_at": "2026-02-02 11:31:02"
+        },
+        "applicant": "Kaique Araujo Moreira",
+        "vacancy_title": "Atendente Hospedagem Jr. (Cód. 2450)",
+        "senior_vacancy_id": "1615c182-374d-473a-876b-3fc45f16a707",
+        "recrutei_vacancy_id": "126748"
+    }
+];
