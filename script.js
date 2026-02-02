@@ -2,10 +2,18 @@
 let allApplicants = [];
 let groupedVacancies = new Map();
 let currentSearchQuery = '';
+let isExtensionMode = false;
 
-// Initialize the application
-document.addEventListener('DOMContentLoaded', async () => {
-    // Inicializar autenticação antes de carregar dados
+// Detectar se estamos rodando no GitHub Pages ou localmente
+const isGitHubPages = window.location.hostname === 'forbizgetwork.github.io';
+
+/**
+ * Inicializa o aplicativo
+ */
+async function initializeApp() {
+    console.log('🚀 Inicializando aplicativo...');
+
+    // Inicializar autenticação
     const authSuccess = await AuthService.init();
 
     if (authSuccess) {
@@ -18,7 +26,49 @@ document.addEventListener('DOMContentLoaded', async () => {
                 <p>Não foi possível validar suas permissões de acesso.</p>
              </div>`;
     }
-});
+}
+
+// Escutar evento da extensão (se estivermos no GitHub Pages)
+if (isGitHubPages) {
+    console.log('🌐 Modo GitHub Pages detectado. Aguardando extensão...');
+
+    // Timeout de segurança: se extensão não responder em 3 segundos, continua mesmo assim
+    const extensionTimeout = setTimeout(() => {
+        if (!isExtensionMode) {
+            console.warn('⏱️ Timeout: Extensão não respondeu em 3s. Iniciando sem dados da extensão...');
+            initializeApp();
+        }
+    }, 3000);
+
+    // Listener para evento da extensão
+    window.addEventListener('senior-context-ready', (event) => {
+        console.log('✅ Evento senior-context-ready recebido!', event.detail);
+        clearTimeout(extensionTimeout);
+        isExtensionMode = true;
+
+        // Aguardar 100ms para garantir que localStorage foi atualizado
+        setTimeout(() => {
+            initializeApp();
+        }, 100);
+    });
+
+    // Verificar se dados já existem (extensão pode ter injetado antes deste script carregar)
+    window.addEventListener('DOMContentLoaded', () => {
+        const hasUserInfo = localStorage.getItem('SENIOR_USER_INFO');
+        const hasToken = localStorage.getItem('SENIOR_TOKEN');
+
+        if (hasUserInfo && hasToken) {
+            console.log('📦 Dados da extensão já presentes no localStorage');
+            clearTimeout(extensionTimeout);
+            isExtensionMode = true;
+            initializeApp();
+        }
+    });
+} else {
+    // Modo local: inicializar diretamente
+    console.log('💻 Modo local detectado. Inicializando diretamente...');
+    document.addEventListener('DOMContentLoaded', initializeApp);
+}
 
 // Load applicants data directly from embedded constant
 function loadApplicants() {

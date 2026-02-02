@@ -167,6 +167,8 @@ const AuthService = {
 
         try {
             console.log(`📡 AuthService: Buscando roles em ${url}...`);
+            console.log(`👤 Usuário para consulta: ${this.state.user}`);
+            console.log(`🔑 Token sendo usado: ${this.state.token?.substring(0, 30)}...`);
 
             const response = await fetch(url, {
                 method: 'POST',
@@ -179,8 +181,19 @@ const AuthService = {
                 })
             });
 
+            console.log(`📊 Status da resposta: ${response.status} ${response.statusText}`);
+
             if (!response.ok) {
                 console.warn(`⚠️ AuthService: Erro ao buscar roles (${response.status}). Usando fallback.`);
+
+                // Tentar ler corpo da resposta para mais detalhes
+                try {
+                    const errorBody = await response.text();
+                    console.warn('📄 Corpo da resposta de erro:', errorBody);
+                } catch (e) {
+                    console.warn('❌ Não foi possível ler corpo do erro');
+                }
+
                 // Fallback para ambiente local/desenvolvimento
                 this.state.roles = [];
                 this.state.isMockMode = true;
