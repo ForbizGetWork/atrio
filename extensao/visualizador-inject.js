@@ -18,12 +18,21 @@
             return;
         }
 
-        // Injeta no localStorage
+        // Verificar se já existe dados (pode ser de setup-login.js ou cache antigo)
+        const existingUserInfo = localStorage.getItem('SENIOR_USER_INFO');
+        const existingToken = localStorage.getItem('SENIOR_TOKEN');
+
+        if (existingUserInfo || existingToken) {
+            console.log('[Atrio Extension] ⚠️ Dados existentes detectados no localStorage. Sobrescrevendo...');
+        }
+
+        // Injeta no localStorage (FORÇA sobrescrita)
         localStorage.setItem('SENIOR_USER_INFO', response.userInfo);
         localStorage.setItem('SENIOR_TOKEN', response.token);
 
+        const userInfo = JSON.parse(response.userInfo);
         console.log('[Atrio Extension] ✅ Contexto injetado!');
-        console.log('[Atrio Extension]    Usuário:', JSON.parse(response.userInfo).data.username);
+        console.log('[Atrio Extension]    Usuário:', userInfo.data.username);
         console.log('[Atrio Extension]    Token:', response.token.substring(0, 30) + '...');
 
         // Dispara evento
@@ -31,8 +40,10 @@
             detail: { ready: true }
         }));
 
-        // Recarrega se necessário
+        // Recarrega página se AuthService já foi carregado mas não tem usuário
+        // (significa que carregou antes da extensão injetar)
         if (window.AuthService && !window.AuthService.state.user) {
+            console.log('[Atrio Extension] 🔄 Recarregando página para aplicar contexto...');
             location.reload();
         }
     });
