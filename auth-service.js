@@ -1,0 +1,266 @@
+const AuthService = {
+    // Configurações da API
+    config: {
+        baseUrl: 'https://platform.senior.com.br/t/senior.com.br/bridge/1.0/rest/platform/authorization',
+        // Mock token para desenvolvimento local APENAS
+        mockToken: 'a6fPEGv8G061y88gCaBvuOyrhERcqUk8'
+    },
+
+    // Estado do usuário
+    state: {
+        user: null, // ID do usuário
+        token: null, // Token Bearer
+        tenant: null, // Domínio do tenant
+        roles: [],
+        allowedCompanies: new Set(),
+        isMockMode: false
+    },
+
+    /**
+     * Inicializa o serviço
+     */
+    async init() {
+        try {
+            console.log('🔐 AuthService: Iniciando...');
+
+            // 1. Tentar contexto real (Senior X)
+            this.tryLoadFromContext();
+
+            // 2. Validação do Contexto
+            if (this.state.user) {
+                console.log(`✅ AuthService: Contexto detectado. Usuário: ${this.state.user}`);
+
+                // Se temos usuário mas não temos token (comum em teste local sem interceptação de rede)
+                if (!this.state.token) {
+                    console.warn('⚠️ AuthService: Token de rede não capturado. Usando token de fallback para chamadas.');
+                    this.state.token = this.config.mockToken;
+                }
+            } else {
+                console.warn('⚠️ AuthService: Contexto Senior não detectado (User Info ausente). Usando MOCK completo.');
+                this.state.isMockMode = true;
+                this.state.user = '087305836087'; // Exemplo
+                this.state.token = this.config.mockToken;
+            }
+
+            // 3. Buscar roles
+            await this.fetchUserRoles();
+
+            // 4. Buscar filtros de abrangência (filiais permitidas)
+            const filters = await this.fetchRoleFilters();
+
+            // 5. Configurar permissões baseadas nos filtros
+            await this.setupPermissions(filters);
+
+            return true;
+        } catch (error) {
+            console.error('🔐 AuthService Error:', error);
+            return false;
+        }
+    },
+
+    /**
+     * Tenta ler informações do localStorage da Senior
+     */
+    tryLoadFromContext() {
+        try {
+            const rawInfo = localStorage.getItem('SENIOR_USER_INFO');
+            if (rawInfo) {
+                const info = JSON.parse(rawInfo);
+                const data = info.data || {};
+
+                // Tenta extrair o usuario (pode variar a estrutura)
+                this.state.user = data.username || data.subject || null;
+                this.state.tenant = data.tenantDomain || null;
+
+                // O token geralmente não fica aqui, mas pode estar em outro lugar ou cookies
+                // Para simplificar, se acharmos o user info, assumimos que estamos no contexto
+                // Em uma injeção real, interceptaríamos o XHR como a extensão faz
+            }
+        } catch (e) {
+            console.log('🔐 AuthService: Falha ao ler localStorage (Normal fora da Senior).');
+        }
+    },
+
+    /**
+     * Define as permissões baseadas nos filtros de abrangência
+     * @param {Array} filters - Filtros retornados pela API getRoleFilters
+     */
+    async setupPermissions(filters) {
+        // Modo Mock (fallback para desenvolvimento local)
+        if (this.state.isMockMode) {
+            console.log('🚧 AuthService: Usando permissões MOCK (Ambiente Local)');
+            // IDs de teste (externalIds)
+            this.state.allowedCompanies.add('B353032E36B5408EAC4632458BA81E0A'); // Matriz
+            this.state.allowedCompanies.add('C964EDC57CA24457AF6E4FB72C820EB0'); // Filial teste
+            this.state.isSuperUser = true; // Mock sempre é superuser
+            return;
+        }
+
+        // Processar filtros reais da API
+        if (!filters || filters.length === 0) {
+            console.warn('⚠️ AuthService: Nenhum filtro de abrangência encontrado. Acesso negado por padrão.');
+            this.state.isSuperUser = false;
+            return;
+        }
+
+        console.log('🔍 AuthService: Processando filtros de abrangência...');
+
+        // Extrair todos os companyBranchId dos filtros
+        filters.forEach(filterGroup => {
+            if (filterGroup.filters && Array.isArray(filterGroup.filters)) {
+                filterGroup.filters.forEach(filter => {
+                    // Procurar por companyBranchId ou companyId
+                    if (filter.name === 'companyBranchId' && filter.value) {
+                        this.state.allowedCompanies.add(filter.value);
+                        console.log(`  ✅ Filial permitida: ${filter.value}`);
+                    }
+                    if (filter.name === 'companyId' && filter.value) {
+                        this.state.allowedCompanies.add(filter.value);
+                        console.log(`  ✅ Matriz permitida: ${filter.value}`);
+                    }
+                });
+            }
+        });
+
+        // Verificar se é superuser (se não tem filtros de restrição, tem acesso total)
+        this.state.isSuperUser = this.state.allowedCompanies.size === 0;
+
+        if (this.state.isSuperUser) {
+            console.log('👑 AuthService: Usuário é SUPERUSER (sem restrições de filial)');
+        } else {
+            console.log(`🔐 AuthService: ${this.state.allowedCompanies.size} filial(is) permitida(s)`);
+        }
+    },
+
+    /**
+     * Busca as roles do usuário usando a API da Senior
+     */
+    async fetchUserRoles() {
+        const url = `${this.config.baseUrl}/queries/getUserDetailRoles`;
+
+        try {
+            console.log(`📡 AuthService: Buscando roles em ${url}...`);
+
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': this.state.token
+                },
+                body: JSON.stringify({
+                    user: this.state.user
+                })
+            });
+
+            if (!response.ok) {
+                console.warn(`⚠️ AuthService: Erro ao buscar roles (${response.status}). Usando fallback.`);
+                // Fallback para ambiente local/desenvolvimento
+                this.state.roles = [];
+                this.state.isMockMode = true;
+                return;
+            }
+
+            const data = await response.json();
+            this.state.roles = data.roles || [];
+
+            console.log(`✅ AuthService: ${this.state.roles.length} roles carregadas:`,
+                this.state.roles.map(r => r.name).join(', '));
+        } catch (error) {
+            console.warn('⚠️ AuthService: Falha ao buscar roles (CORS ou rede). Usando fallback.', error);
+            this.state.roles = [];
+            this.state.isMockMode = true;
+        }
+    },
+
+    /**
+     * Busca os filtros de abrangência (filiais permitidas) para os papéis do usuário
+     */
+    async fetchRoleFilters() {
+        if (this.state.roles.length === 0) {
+            console.log('📋 AuthService: Sem roles para buscar filtros.');
+            return [];
+        }
+
+        const url = `${this.config.baseUrl}/queries/getRoleFilters`;
+        const roleNames = this.state.roles.map(r => r.name);
+
+        try {
+            console.log(`📡 AuthService: Buscando filtros de abrangência para ${roleNames.length} papel(is)...`);
+
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': this.state.token
+                },
+                body: JSON.stringify({
+                    roles: roleNames,
+                    domainName: 'hcm',
+                    serviceName: 'vacancymanagement'
+                })
+            });
+
+            if (!response.ok) {
+                console.warn(`⚠️ AuthService: Erro ao buscar filtros (${response.status})`);
+                return [];
+            }
+
+            const data = await response.json();
+            return data.filters || [];
+        } catch (error) {
+            console.warn('⚠️ AuthService: Falha ao buscar filtros de abrangência', error);
+            return [];
+        }
+    },
+
+    /**
+     * Verifica se o usuário tem permissão para visualizar um candidato
+     * @param {Object} applicant Objeto do candidato
+     * @returns {boolean}
+     */
+    canViewApplicant(applicant) {
+        // Se for superuser, vê tudo
+        if (this.state.isSuperUser) return true;
+
+        /* 
+           LÓGICA DE SEGURANÇA ATIVA - RBAC COMPLETO
+           Compara o externalId da filial do candidato com as permissões do usuário
+        */
+
+        // Busca o externalId da filial (UUID que vem da API Senior)
+        // Prioridade: branchOffice > headOffice
+        const branchExternalId = applicant.body?.branchOffice?.externalId;
+        const headExternalId = applicant.body?.headOffice?.externalId;
+
+        const companyExternalId = branchExternalId || headExternalId;
+
+        // Se não tiver externalId de filial, bloqueia por segurança (Default Deny)
+        if (!companyExternalId) {
+            // Log apenas uma vez para não spam
+            if (!window._loggedMissingId) {
+                const candidateName = applicant.body?.talent?.user?.name || applicant.applicant || 'Desconhecido';
+                console.warn('⚠️ BLOQUEADO: Candidato sem externalId de filial no JSON:', {
+                    candidato: candidateName,
+                    estrutura: applicant.body
+                });
+                window._loggedMissingId = true;
+            }
+            return false;
+        }
+
+        // Verifica se o usuário tem permissão para esta filial
+        const temPermissao = this.state.allowedCompanies.has(companyExternalId);
+
+        // Log de debug (apenas primeira negação de acesso)
+        if (!temPermissao && !window._loggedAccessDenied) {
+            const branchName = applicant.body?.branchOffice?.name || 'Desconhecida';
+            console.warn(`🚫 ACESSO NEGADO: Usuário não tem permissão para a filial "${branchName}" (${companyExternalId})`);
+            window._loggedAccessDenied = true;
+        }
+
+        return temPermissao;
+    }
+};
+
+// Exporta para uso global
+window.AuthService = AuthService;
