@@ -4,8 +4,11 @@ let groupedVacancies = new Map();
 let currentSearchQuery = '';
 let isExtensionMode = false;
 
-// Detectar se estamos rodando no GitHub Pages ou localmente
-const isGitHubPages = window.location.hostname === 'forbizgetwork.github.io';
+// Detectar se estamos em ambiente suportado pela extensão (GitHub Pages ou Localhost)
+const isExtensionSupported =
+    window.location.hostname === 'forbizgetwork.github.io' ||
+    window.location.hostname === 'localhost' ||
+    window.location.hostname === '127.0.0.1';
 
 /**
  * Inicializa o aplicativo
@@ -28,9 +31,9 @@ async function initializeApp() {
     }
 }
 
-// Escutar evento da extensão (se estivermos no GitHub Pages)
-if (isGitHubPages) {
-    console.log('🌐 Modo GitHub Pages detectado. Aguardando extensão...');
+// Escutar evento da extensão (se estivermos em ambiente suportado)
+if (isExtensionSupported) {
+    console.log('🌐 Ambiente compatível com extensão detectado. Aguardando extensão...');
 
     // Timeout de segurança: se extensão não responder em 3 segundos, continua mesmo assim
     const extensionTimeout = setTimeout(() => {

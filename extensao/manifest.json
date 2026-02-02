@@ -10,7 +10,9 @@
     ],
     "host_permissions": [
         "https://platform.senior.com.br/*",
-        "https://forbizgetwork.github.io/*"
+        "https://forbizgetwork.github.io/*",
+        "http://localhost:*/*",
+        "http://127.0.0.1:*/*"
     ],
     "background": {
         "service_worker": "background.js"
@@ -18,7 +20,9 @@
     "content_scripts": [
         {
             "matches": [
-                "https://forbizgetwork.github.io/atrio/*"
+                "https://forbizgetwork.github.io/atrio/*",
+                "http://localhost:*/*",
+                "http://127.0.0.1:*/*"
             ],
             "js": [
                 "visualizador-inject.js"
@@ -41,6 +45,17 @@
             ],
             "js": [
                 "token-listener.js"
+            ],
+            "run_at": "document_start"
+        },
+        {
+            "matches": [
+                "https://forbizgetwork.github.io/atrio/*",
+                "http://localhost:*/*",
+                "http://127.0.0.1:*/*"
+            ],
+            "js": [
+                "visualizador-inject.js"
             ],
             "run_at": "document_start"
         }
