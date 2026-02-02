@@ -1,15 +1,20 @@
 {
     "manifest_version": 3,
     "name": "Atrio - Visualizador de Vagas (Senior Bridge)",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Extensão para conectar o Visualizador de Vagas com a plataforma Senior X",
     "permissions": [
-        "storage"
+        "storage",
+        "tabs",
+        "scripting"
     ],
     "host_permissions": [
         "https://platform.senior.com.br/*",
         "https://forbizgetwork.github.io/*"
     ],
+    "background": {
+        "service_worker": "background.js"
+    },
     "content_scripts": [
         {
             "matches": [
