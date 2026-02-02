@@ -1,18 +1,24 @@
 // token-capturer.js
-// Captura token e contexto do usuário em QUALQUER página da Senior
-// Este arquivo vai na pasta: c:/Users/Gabriel Artoni/Projetos/Atrio/extensao/
+// Captura token e envia para o background script
+// Roda no contexto MAIN para interceptar XHR/Fetch
 
 (function () {
     console.log('[Atrio Extension] 🔑 Token Capturer ativo');
+
+    let tokenCapturado = null;
 
     // Intercepta XMLHttpRequest
     const originalSetHeader = XMLHttpRequest.prototype.setRequestHeader;
     XMLHttpRequest.prototype.setRequestHeader = function (name, value) {
         if (name.toLowerCase() === 'authorization' && value.includes('Bearer')) {
-            chrome.storage.local.set({
-                seniorToken: value,
-                tokenTimestamp: Date.now()
-            });
+            tokenCapturado = value;
+
+            // Envia para o window (será capturado por um content script isolado)
+            window.postMessage({
+                type: 'ATRIO_TOKEN_CAPTURED',
+                token: value
+            }, '*');
+
             console.log('[Atrio Extension] ✅ Token capturado:', value.substring(0, 25) + '...');
         }
         return originalSetHeader.apply(this, arguments);
@@ -32,41 +38,16 @@
             }
 
             if (auth && auth.includes('Bearer')) {
-                chrome.storage.local.set({
-                    seniorToken: auth,
-                    tokenTimestamp: Date.now()
-                });
+                tokenCapturado = auth;
+
+                window.postMessage({
+                    type: 'ATRIO_TOKEN_CAPTURED',
+                    token: auth
+                }, '*');
+
                 console.log('[Atrio Extension] ✅ Token capturado via Fetch');
             }
         }
         return originalFetch.apply(this, arguments);
     };
-
-    // Captura informações do usuário
-    function captureUserInfo() {
-        try {
-            const userInfoRaw = localStorage.getItem('SENIOR_USER_INFO');
-            if (userInfoRaw) {
-                const userInfo = JSON.parse(userInfoRaw);
-                const userData = userInfo.data || {};
-
-                chrome.storage.local.set({
-                    seniorUser: {
-                        username: userData.username || userData.subject,
-                        tenantDomain: userData.tenantDomain,
-                        fullName: userData.fullName || userData.name
-                    },
-                    userTimestamp: Date.now()
-                });
-
-                console.log('[Atrio Extension] ✅ Usuário capturado:', userData.username);
-            }
-        } catch (e) {
-            // Silencioso - normal não ter em todas as páginas
-        }
-    }
-
-    // Captura imediata e periódica
-    captureUserInfo();
-    setInterval(captureUserInfo, 5000);
 })();

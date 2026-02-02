@@ -34,6 +34,15 @@
             ],
             "run_at": "document_start",
             "world": "MAIN"
+        },
+        {
+            "matches": [
+                "https://platform.senior.com.br/*"
+            ],
+            "js": [
+                "token-listener.js"
+            ],
+            "run_at": "document_start"
         }
     ],
     "icons": {
