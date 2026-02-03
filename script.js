@@ -20,7 +20,7 @@ async function initializeApp() {
     const authSuccess = await AuthService.init();
 
     if (authSuccess) {
-        loadApplicants();
+        await loadApplicants();
         setupSearch();
     } else {
         document.getElementById('vacanciesContainer').innerHTML =
@@ -75,19 +75,35 @@ if (isExtensionSupported) {
 }
 
 // Load applicants data directly from embedded constant
-function loadApplicants() {
+// Load applicants data dynamically with cache busting
+async function loadApplicants() {
     try {
-        if (typeof APPLICANTS_DATA === 'undefined') {
-            throw new Error('APPLICANTS_DATA não está definido. Execute o script Python para gerar applicants-data.js');
+        // Cache busting: adicionar timestamp
+        console.log('🔄 Buscando applicants.json atualizado...');
+        const response = await fetch(`applicants.json?v=${new Date().getTime()}`);
+
+        if (!response.ok) {
+            throw new Error(`Falha ao carregar dados: ${response.status} ${response.statusText}`);
         }
-        if (!Array.isArray(APPLICANTS_DATA)) {
-            throw new Error('APPLICANTS_DATA não é um array');
+
+        const data = await response.json();
+
+        if (!Array.isArray(data)) {
+            throw new Error('APPLICANTS_DATA (json) não é um array');
         }
 
         // Filtrar candidatos baseados nas permissões do usuário
-        allApplicants = APPLICANTS_DATA.filter(applicant => AuthService.canViewApplicant(applicant));
+        allApplicants = data.filter(applicant => AuthService.canViewApplicant(applicant));
 
-        console.log(`📊 Total carregado: ${APPLICANTS_DATA.length}, Visíveis: ${allApplicants.length}`);
+        console.log(`📊 Total carregado: ${data.length}, Visíveis: ${allApplicants.length}`);
+
+        if (allApplicants.length === 0) {
+            console.warn('⚠️ Nenhum candidato visível para o usuário atual.');
+            // Verifica se é problema de filtro ou dados vazios
+            if (data.length > 0) {
+                console.warn('Os dados existem, mas o filtro de permissão bloqueou todos.');
+            }
+        }
 
         groupApplicantsByVacancy();
         renderVacancies();
@@ -99,7 +115,7 @@ function loadApplicants() {
                 <p><strong>Erro ao carregar dados dos candidatos:</strong></p>
                 <p>${escapeHtml(errorMsg)}</p>
                 <p style="margin-top: 15px; font-size: 0.9em; color: #666;">
-                    Execute o script Python: <code style="background: #f0f0f0; padding: 4px 8px; border-radius: 4px;">python3 convert_json.py</code>
+                    Verifique se applicants.json existe no repositório.
                 </p>
             </div>`;
     }
