@@ -269,9 +269,12 @@ const AuthService = {
         */
 
         // Busca o externalId da filial (UUID que vem da API Senior)
-        // Prioridade: branchOffice > headOffice
-        const branchExternalId = applicant.body?.branchOffice?.externalId;
-        const headExternalId = applicant.body?.headOffice?.externalId;
+        // Suporte para múltiplos formatos (snake_case na raiz ou camelCase no body)
+        const branchObj = applicant.branch_office || applicant.branchOffice || applicant.body?.branchOffice;
+        const headObj = applicant.head_office || applicant.headOffice || applicant.body?.headOffice;
+
+        const branchExternalId = branchObj?.externalId;
+        const headExternalId = headObj?.externalId;
 
         const companyExternalId = branchExternalId || headExternalId;
 
