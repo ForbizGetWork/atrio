@@ -1,0 +1,9 @@
+# Dependências do Projeto Atrio
+
+# Core
+python-dotenv==1.0.0
+
+# Supabase (para exportação automática)
+supabase==2.3.0
+
+# Git automation já usa subprocess (built-in)
