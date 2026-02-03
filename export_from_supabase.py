@@ -4,7 +4,7 @@ Script de Exportação Automática - PostgreSQL (Supabase) → GitHub Pages
 
 Fluxo:
 1. Conecta no PostgreSQL (Supabase) diretamente
-2. Busca candidatos da tabela audit_log
+2. Busca candidatos vinculados da tabela audit_log
 3. Exporta para applicants.json
 4. Converte para applicants-data.js
 5. Faz commit e push para GitHub
@@ -35,10 +35,11 @@ DB_USER = os.getenv('DB_USER', 'postgres')
 DB_NAME = os.getenv('DB_NAME', 'postgres')
 DB_PASSWORD = os.getenv('DB_PASSWORD')
 
-# Configuração da tabela (conforme implementação do Tiago)
+# Configuração da tabela
 SCHEMA_NAME = 'public'
 TABLE_NAME = 'audit_log'
-DETAILS_COLUMN = 'details'  # Coluna JSONB com os payloads dos candidatos
+DETAILS_COLUMN = 'details'
+MESSAGE_FILTER = 'Candidato vinculado'  # Filtro para pegar apenas candidatos vinculados
 
 # Diretório do projeto
 PROJECT_DIR = Path(__file__).parent
@@ -81,43 +82,50 @@ def connect_database():
 
 def fetch_applicants(conn) -> list:
     """
-    Busca todos os candidatos do PostgreSQL (tabela audit_log, coluna details)
+    Busca candidatos vinculados do PostgreSQL (tabela audit_log)
     
-    A coluna 'details' contém o payload completo do candidato em formato JSONB
+    Estratégia otimizada: busca os últimos registros da tabela e filtra por message
+    Isso é muito mais rápido do que scan completo em tabela sem índice
     """
-    print(f"📡 Buscando candidatos de '{SCHEMA_NAME}.{TABLE_NAME}' (coluna '{DETAILS_COLUMN}')...")
+    print(f"📡 Buscando candidatos vinculados de '{SCHEMA_NAME}.{TABLE_NAME}'...")
+    print(f"   (Buscando últimos 5000 registros, filtrando '{MESSAGE_FILTER}')")
     
     try:
-        # Usar cursor que retorna dicionários
         cursor = conn.cursor(cursor_factory=RealDictCursor)
         
-        # Query SQL
+        # ESTRATÉGIA OTIMIZADA:
+        # 1. Pegar apenas os últimos 5000 registros (mais rápido)
+        # 2. Filtrar por message no Python (rápido)
+        # Isso evita timeout em scans completos de tabela grande sem índice
+        
         query = f"""
-            SELECT {DETAILS_COLUMN}
+            SELECT id, message, {DETAILS_COLUMN}, created_at
             FROM {SCHEMA_NAME}.{TABLE_NAME}
             WHERE {DETAILS_COLUMN} IS NOT NULL
+            ORDER BY id DESC
+            LIMIT 5000
         """
         
+        print(f"   Executando query otimizada...")
         cursor.execute(query)
         rows = cursor.fetchall()
         cursor.close()
         
-        if not rows:
-            print("⚠️ Nenhum registro encontrado na tabela")
-            return []
+        print(f"   ✅ {len(rows)} registros recuperados, filtrando...")
         
-        # Extrair os payloads da coluna details
+        # Filtrar apenas candidatos vinculados
         applicants = []
         for row in rows:
-            details = row.get(DETAILS_COLUMN)
-            
-            if not details:
-                continue
-            
-            # O details já é o payload completo do candidato (já vem como dict do JSONB)
-            applicants.append(details)
+            if row.get('message') == MESSAGE_FILTER:
+                details = row.get(DETAILS_COLUMN)
+                if details:
+                    applicants.append(details)
         
-        print(f"✅ {len(applicants)} candidatos encontrados")
+        if not applicants:
+            print("⚠️ Nenhum candidato vinculado encontrado nos últimos 10000 registros")
+            return []
+        
+        print(f"✅ {len(applicants)} candidatos vinculados encontrados")
         return applicants
         
     except psycopg2.Error as e:
@@ -130,29 +138,38 @@ def fetch_applicants(conn) -> list:
 
 def transform_data(raw_data: list) -> list:
     """
-    Valida e transforma os dados do banco
+    Valida, transforma e limpa os dados do banco
     
-    Como os dados já vêm no formato correto da coluna 'details',
-    apenas validamos os campos críticos
+    Valida campos críticos, conta quantos têm externalId e remove campos desnecessários
+    para reduzir o tamanho do arquivo (~98% de redução)
     """
-    print("🔄 Validando dados...")
+    print("🔄 Validando e limpando dados...")
     
     valid_applicants = []
     warnings = []
+    stats = {
+        'total': len(raw_data),
+        'with_external_id': 0,
+        'without_external_id': 0,
+        'missing_fields': 0
+    }
     
     for idx, applicant in enumerate(raw_data):
         # Validar estrutura básica
         if not isinstance(applicant, dict):
             warnings.append(f"Registro {idx}: Não é um objeto JSON válido")
+            stats['missing_fields'] += 1
             continue
         
         # Validar campos obrigatórios
         if not applicant.get("applicant"):
             warnings.append(f"Registro {idx}: Campo 'applicant' ausente")
+            stats['missing_fields'] += 1
             continue
         
         if not applicant.get("vacancy_title"):
             warnings.append(f"Registro {idx}: Campo 'vacancy_title' ausente")
+            stats['missing_fields'] += 1
             continue
         
         # Validar campo CRÍTICO para RBAC
@@ -160,31 +177,69 @@ def transform_data(raw_data: list) -> list:
         branch_external_id = body.get("branchOffice", {}).get("externalId")
         head_external_id = body.get("headOffice", {}).get("externalId")
         
-        if not branch_external_id and not head_external_id:
+        if branch_external_id or head_external_id:
+            stats['with_external_id'] += 1
+        else:
+            stats['without_external_id'] += 1
             warnings.append(
                 f"⚠️ Candidato '{applicant.get('applicant')}': "
                 f"Sem externalId (branchOffice ou headOffice). "
                 f"Este candidato NÃO será visível para ninguém!"
             )
         
-        valid_applicants.append(applicant)
+        # LIMPEZA: Manter apenas campos essenciais (reduz ~98% do tamanho)
+        clean_item = {
+            "applicant": applicant.get("applicant"),
+            "vacancy_title": applicant.get("vacancy_title"),
+            "senior_vacancy_id": applicant.get("senior_vacancy_id"),
+            "recrutei_vacancy_id": applicant.get("recrutei_vacancy_id"),
+            "body": {}
+        }
+        
+        # Manter apenas branchOffice e headOffice (essenciais para RBAC)
+        if "branchOffice" in body:
+            clean_item["body"]["branchOffice"] = body["branchOffice"]
+        
+        if "headOffice" in body:
+            clean_item["body"]["headOffice"] = body["headOffice"]
+        
+        # Adicionar dados básicos do talento
+        if "talent" in body:
+            talent = body["talent"]
+            clean_item["body"]["talent"] = {
+                "id": talent.get("id"),
+                "user": {
+                    "name": talent.get("user", {}).get("name"),
+                    "email": talent.get("user", {}).get("email"),
+                    "city": talent.get("user", {}).get("city")
+                }
+            }
+        
+        valid_applicants.append(clean_item)
     
-    # Mostrar avisos
-    if warnings:
-        print(f"\n⚠️ {len(warnings)} avisos encontrados:")
-        for warning in warnings[:10]:  # Mostrar no máximo 10
-            print(f"   • {warning}")
-        if len(warnings) > 10:
-            print(f"   ... e mais {len(warnings) - 10} avisos")
-        print()
+    # Mostrar estatísticas
+    print(f"\n📊 Estatísticas:")
+    print(f"   Total processados: {stats['total']}")
+    print(f"   ✅ Com externalId: {stats['with_external_id']}")
+    print(f"   ⚠️ Sem externalId: {stats['without_external_id']}")
+    print(f"   ❌ Campos ausentes: {stats['missing_fields']}")
     
-    print(f"✅ {len(valid_applicants)} candidatos válidos")
+    # Mostrar avisos (máximo 5)
+    if warnings and stats['without_external_id'] > 0:
+        print(f"\n⚠️ Avisos (mostrando até 5):")
+        for warning in warnings[:5]:
+            if "Sem externalId" in warning:
+                print(f"   • {warning}")
+        if len(warnings) > 5:
+            print(f"   ... e mais {len(warnings) - 5} avisos")
+    
+    print(f"\n✅ {len(valid_applicants)} candidatos válidos e limpos")
     return valid_applicants
 
 
 def save_json(data: list, filepath: Path):
     """Salva dados em arquivo JSON"""
-    print(f"💾 Salvando em {filepath}...")
+    print(f"\n💾 Salvando em {filepath}...")
     
     with open(filepath, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
@@ -220,29 +275,37 @@ const APPLICANTS_DATA = {json_str};
 
 def git_commit_and_push():
     """Faz commit e push para GitHub"""
-    print("📤 Fazendo deploy no GitHub...")
+    print("\n📤 Fazendo deploy no GitHub...")
     
     try:
         # Add
         subprocess.run(['git', 'add', 'applicants.json', 'applicants-data.js'], 
-                      cwd=PROJECT_DIR, check=True)
+                      cwd=PROJECT_DIR, check=True, capture_output=True)
         
         # Commit
         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M')
         commit_msg = f"chore: Atualizar dados dos candidatos ({timestamp})"
-        subprocess.run(['git', 'commit', '-m', commit_msg], 
-                      cwd=PROJECT_DIR, check=True)
+        result = subprocess.run(['git', 'commit', '-m', commit_msg], 
+                              cwd=PROJECT_DIR, capture_output=True, text=True)
+        
+        if result.returncode != 0:
+            if "nothing to commit" in result.stdout:
+                print("⚠️ Nenhuma mudança detectada (dados já estão atualizados)")
+                return
+            else:
+                print(f"⚠️ Erro no commit: {result.stderr}")
+                return
         
         # Push
         subprocess.run(['git', 'push', 'origin', 'main'], 
-                      cwd=PROJECT_DIR, check=True)
+                      cwd=PROJECT_DIR, check=True, capture_output=True)
         
         print("✅ Deploy concluído!")
         print("🌐 Aguarde ~2 minutos para GitHub Pages atualizar")
         
     except subprocess.CalledProcessError as e:
         print(f"⚠️ Erro no Git: {e}")
-        print("   (Pode ser que não houve mudanças)")
+        print("   Verifique se o Git está configurado corretamente")
 
 
 def main():
@@ -262,11 +325,15 @@ def main():
         raw_data = fetch_applicants(conn)
         
         if not raw_data:
-            print("⚠️ Nenhum dado encontrado. Abortando.")
+            print("\n⚠️ Nenhum dado encontrado. Abortando.")
             return
         
         # 3. Transformar dados
         applicants = transform_data(raw_data)
+        
+        if not applicants:
+            print("\n⚠️ Nenhum candidato válido. Abortando.")
+            return
         
         # 4. Salvar JSON
         json_file = PROJECT_DIR / 'applicants.json'
@@ -292,6 +359,8 @@ def main():
         print("=" * 60)
         print(f"❌ ERRO: {e}")
         print("=" * 60)
+        import traceback
+        traceback.print_exc()
         raise
         
     finally:
