@@ -4,6 +4,20 @@
     "vacancy_title": "Arrumadeira(o) Jr IBIS SANTOS VALONGO  (Cód. 3034)",
     "senior_vacancy_id": "undefined",
     "recrutei_vacancy_id": "122442",
+    "branch_office": {
+      "id": "dad6693e-6fa6-4138-b2df-e22adbdff572",
+      "code": 38,
+      "name": "ATRIO SA - Ibis Santos Valongo",
+      "externalId": "7733B08571024AA3B95BF2279FCCF044",
+      "tradingName": "Ibis Santos Valongo"
+    },
+    "head_office": {
+      "id": "e1e11a5f-c7a9-4f14-9410-aeef3d04a61c",
+      "code": 1,
+      "name": "ATRIO HOTEIS SA",
+      "externalId": "B353032E36B5408EAC4632458BA81E0A",
+      "tradingName": "Atrio Hoteis SA"
+    },
     "body": {
       "talent": {
         "id": 2690224,
@@ -20,6 +34,20 @@
     "vacancy_title": "Atendente Hospedagem Jr Ibis Santos Valongo  (Cód. 3150)",
     "senior_vacancy_id": "undefined",
     "recrutei_vacancy_id": "124980",
+    "branch_office": {
+      "id": "dad6693e-6fa6-4138-b2df-e22adbdff572",
+      "code": 38,
+      "name": "ATRIO SA - Ibis Santos Valongo",
+      "externalId": "7733B08571024AA3B95BF2279FCCF044",
+      "tradingName": "Ibis Santos Valongo"
+    },
+    "head_office": {
+      "id": "e1e11a5f-c7a9-4f14-9410-aeef3d04a61c",
+      "code": 1,
+      "name": "ATRIO HOTEIS SA",
+      "externalId": "B353032E36B5408EAC4632458BA81E0A",
+      "tradingName": "Atrio Hoteis SA"
+    },
     "body": {
       "talent": {
         "id": 6676740,
@@ -36,6 +64,20 @@
     "vacancy_title": "Atendente Hospedagem Jr. - ibis Curitiba aeroporto (Cód. 2731)",
     "senior_vacancy_id": "undefined",
     "recrutei_vacancy_id": "117397",
+    "branch_office": {
+      "id": "461cb3bb-e0b1-4d03-8682-3fb970459180",
+      "code": 6,
+      "name": "ATRIO SA - Ibis Curitiba Aero",
+      "externalId": "366D2C34EDCC4B75ACF0230F60D7074B",
+      "tradingName": "Ibis Curitiba Aeroporto"
+    },
+    "head_office": {
+      "id": "e1e11a5f-c7a9-4f14-9410-aeef3d04a61c",
+      "code": 1,
+      "name": "ATRIO HOTEIS SA",
+      "externalId": "B353032E36B5408EAC4632458BA81E0A",
+      "tradingName": "Atrio Hoteis SA"
+    },
     "body": {
       "talent": {
         "id": 5915586,
@@ -52,21 +94,21 @@
     "vacancy_title": "Atendente Hospedagem Jr. (Cód. 2450)",
     "senior_vacancy_id": "undefined",
     "recrutei_vacancy_id": "126748",
+    "branch_office": {
+      "id": "843060c9-5864-4cf9-9eff-e856ddead51d",
+      "code": 25,
+      "name": "ATRIO SA - Ibis Jundiai",
+      "externalId": "47123BAEA78A4AC1AA04CD424B125E48",
+      "tradingName": "Ibis Jundiai"
+    },
+    "head_office": {
+      "id": "e1e11a5f-c7a9-4f14-9410-aeef3d04a61c",
+      "code": 1,
+      "name": "ATRIO HOTEIS SA",
+      "externalId": "B353032E36B5408EAC4632458BA81E0A",
+      "tradingName": "Atrio Hoteis SA"
+    },
     "body": {
-      "branchOffice": {
-        "id": "843060c9-5864-4cf9-9eff-e856ddead51d",
-        "code": 25,
-        "name": "ATRIO SA - Ibis Jundiai",
-        "externalId": "47123BAEA78A4AC1AA04CD424B125E48",
-        "tradingName": "Ibis Jundiai"
-      },
-      "headOffice": {
-        "id": "e1e11a5f-c7a9-4f14-9410-aeef3d04a61c",
-        "code": 1,
-        "name": "ATRIO HOTEIS SA",
-        "externalId": "B353032E36B5408EAC4632458BA81E0A",
-        "tradingName": "Atrio Hoteis SA"
-      },
       "talent": {
         "id": 3913326,
         "user": {
@@ -82,21 +124,21 @@
     "vacancy_title": "Atendente Hospedagem Pl. (Cód. 3340)",
     "senior_vacancy_id": "undefined",
     "recrutei_vacancy_id": "127901",
+    "branch_office": {
+      "id": "dad6693e-6fa6-4138-b2df-e22adbdff572",
+      "code": 38,
+      "name": "ATRIO SA - Ibis Santos Valongo",
+      "externalId": "7733B08571024AA3B95BF2279FCCF044",
+      "tradingName": "Ibis Santos Valongo"
+    },
+    "head_office": {
+      "id": "e1e11a5f-c7a9-4f14-9410-aeef3d04a61c",
+      "code": 1,
+      "name": "ATRIO HOTEIS SA",
+      "externalId": "B353032E36B5408EAC4632458BA81E0A",
+      "tradingName": "Atrio Hoteis SA"
+    },
     "body": {
-      "branchOffice": {
-        "id": "dad6693e-6fa6-4138-b2df-e22adbdff572",
-        "code": 38,
-        "name": "ATRIO SA - Ibis Santos Valongo",
-        "externalId": "7733B08571024AA3B95BF2279FCCF044",
-        "tradingName": "Ibis Santos Valongo"
-      },
-      "headOffice": {
-        "id": "e1e11a5f-c7a9-4f14-9410-aeef3d04a61c",
-        "code": 1,
-        "name": "ATRIO HOTEIS SA",
-        "externalId": "B353032E36B5408EAC4632458BA81E0A",
-        "tradingName": "Atrio Hoteis SA"
-      },
       "talent": {
         "id": 2937658,
         "user": {
@@ -112,21 +154,21 @@
     "vacancy_title": "Garçom Jr. MATUTINO - Grand Mercure Curitiba Rayon (Cód. 3286)",
     "senior_vacancy_id": "undefined",
     "recrutei_vacancy_id": "127115",
+    "branch_office": {
+      "id": "4b6e0fbf-6d18-45db-ac72-f60a2a8de177",
+      "code": 79,
+      "name": "RB - Grand Mercure Rayon",
+      "externalId": "2F5ECF1C0CCC47C3866370981F3C92DA",
+      "tradingName": "Gran Mercure"
+    },
+    "head_office": {
+      "id": "5052eba3-b619-4ca7-a1de-0e150c2e8972",
+      "code": 79,
+      "name": "RB HOTELARIA LTDA",
+      "externalId": "C2CA4A1881524834839397ED9CDEDB72",
+      "tradingName": "Grand Mercure Rayon"
+    },
     "body": {
-      "branchOffice": {
-        "id": "4b6e0fbf-6d18-45db-ac72-f60a2a8de177",
-        "code": 79,
-        "name": "RB - Grand Mercure Rayon",
-        "externalId": "2F5ECF1C0CCC47C3866370981F3C92DA",
-        "tradingName": "Gran Mercure"
-      },
-      "headOffice": {
-        "id": "5052eba3-b619-4ca7-a1de-0e150c2e8972",
-        "code": 79,
-        "name": "RB HOTELARIA LTDA",
-        "externalId": "C2CA4A1881524834839397ED9CDEDB72",
-        "tradingName": "Grand Mercure Rayon"
-      },
       "talent": {
         "id": 7227129,
         "user": {
@@ -142,6 +184,8 @@
     "vacancy_title": "Arrumadeira(o) Jr. (Cód. 3255)",
     "senior_vacancy_id": "undefined",
     "recrutei_vacancy_id": "128747",
+    "branch_office": null,
+    "head_office": null,
     "body": {
       "talent": {
         "id": 3348540,
@@ -158,6 +202,8 @@
     "vacancy_title": "Atendente Hospedagem Jr. IBIS BUDGET GUARULHOS (Cód. 3208)",
     "senior_vacancy_id": "undefined",
     "recrutei_vacancy_id": "126763",
+    "branch_office": null,
+    "head_office": null,
     "body": {
       "talent": {
         "id": 7226610,
@@ -174,6 +220,8 @@
     "vacancy_title": "Atendente Hospedagem Jr Ibis Santos Valongo  (Cód. 3150)",
     "senior_vacancy_id": "undefined",
     "recrutei_vacancy_id": "124980",
+    "branch_office": null,
+    "head_office": null,
     "body": {
       "talent": {
         "id": 7226610,
@@ -190,6 +238,8 @@
     "vacancy_title": "Arrumadeira(o) Jr. (Cód. 3254)",
     "senior_vacancy_id": "undefined",
     "recrutei_vacancy_id": "128651",
+    "branch_office": null,
+    "head_office": null,
     "body": {
       "talent": {
         "id": 6942303,
@@ -206,6 +256,8 @@
     "vacancy_title": "Recepcionista Jr. 12x36 - GRAND MERCURE CURITIBA RAYON (Cód. 2241)",
     "senior_vacancy_id": "undefined",
     "recrutei_vacancy_id": "126766",
+    "branch_office": null,
+    "head_office": null,
     "body": {
       "talent": {
         "id": 7226652,
@@ -222,6 +274,8 @@
     "vacancy_title": "Arrumadeira(o) Jr. (Cód. 3091)",
     "senior_vacancy_id": "undefined",
     "recrutei_vacancy_id": "123768",
+    "branch_office": null,
+    "head_office": null,
     "body": {
       "talent": {
         "id": 7152036,
@@ -238,6 +292,8 @@
     "vacancy_title": "Arrumadeira(o) Jr. (Cód. 3255)",
     "senior_vacancy_id": "undefined",
     "recrutei_vacancy_id": "128392",
+    "branch_office": null,
+    "head_office": null,
     "body": {
       "talent": {
         "id": 7152036,
@@ -254,6 +310,8 @@
     "vacancy_title": "Atendente Hospedagem Jr. (Cód. 2463)",
     "senior_vacancy_id": "undefined",
     "recrutei_vacancy_id": "124778",
+    "branch_office": null,
+    "head_office": null,
     "body": {
       "talent": {
         "id": 540761,
@@ -270,6 +328,8 @@
     "vacancy_title": "Auxiliar Serviços Gerais  - 12x36 - Grand Mercure Curitiba Rayon (Cód. 3088)",
     "senior_vacancy_id": "undefined",
     "recrutei_vacancy_id": "123773",
+    "branch_office": null,
+    "head_office": null,
     "body": {
       "talent": {
         "id": 7226389,
@@ -286,6 +346,8 @@
     "vacancy_title": "Auxiliar Serviços Gerais - 12x36 - Grand Mercure Curitiba Rayon (Cód. 3288)",
     "senior_vacancy_id": "undefined",
     "recrutei_vacancy_id": "127113",
+    "branch_office": null,
+    "head_office": null,
     "body": {
       "talent": {
         "id": 7226389,
@@ -302,6 +364,8 @@
     "vacancy_title": "Aprendiz IBIS & IBIS BUDGET RJ CENTRO (Cód. 3260)",
     "senior_vacancy_id": "undefined",
     "recrutei_vacancy_id": "126884",
+    "branch_office": null,
+    "head_office": null,
     "body": {
       "talent": {
         "id": 5905644,
@@ -318,6 +382,8 @@
     "vacancy_title": "Auxiliar de Cozinha VESPERTINO - Grand Mercure Curitiba Rayon (Cód. 3285)",
     "senior_vacancy_id": "undefined",
     "recrutei_vacancy_id": "127116",
+    "branch_office": null,
+    "head_office": null,
     "body": {
       "talent": {
         "id": 7226389,
@@ -334,6 +400,8 @@
     "vacancy_title": "Auxiliar Almoxarifado Ibis santos valongo  (Cód. 3220)",
     "senior_vacancy_id": "undefined",
     "recrutei_vacancy_id": "126751",
+    "branch_office": null,
+    "head_office": null,
     "body": {
       "talent": {
         "id": 5909674,
@@ -350,6 +418,8 @@
     "vacancy_title": "Recepcionista Jr. 12x36 - GRAND MERCURE CURITIBA RAYON (Cód. 2241)",
     "senior_vacancy_id": "undefined",
     "recrutei_vacancy_id": "126766",
+    "branch_office": null,
+    "head_office": null,
     "body": {
       "talent": {
         "id": 7223272,
@@ -366,6 +436,8 @@
     "vacancy_title": "Arrumadeira(o) Jr. (Cód. 3255)",
     "senior_vacancy_id": "undefined",
     "recrutei_vacancy_id": "128525",
+    "branch_office": null,
+    "head_office": null,
     "body": {
       "talent": {
         "id": 7152036,
@@ -382,6 +454,8 @@
     "vacancy_title": "Arrumadeira(o) Jr. (Cód. 3254)",
     "senior_vacancy_id": "undefined",
     "recrutei_vacancy_id": "128698",
+    "branch_office": null,
+    "head_office": null,
     "body": {
       "talent": {
         "id": 7152036,
@@ -398,6 +472,8 @@
     "vacancy_title": "Arrumadeira(o) Jr. (Cód. 3255)",
     "senior_vacancy_id": "undefined",
     "recrutei_vacancy_id": "128206",
+    "branch_office": null,
+    "head_office": null,
     "body": {
       "talent": {
         "id": 7152036,
@@ -414,6 +490,8 @@
     "vacancy_title": "Roupeiro - LK Design Hotel  (Cód. 3291)",
     "senior_vacancy_id": "undefined",
     "recrutei_vacancy_id": "127109",
+    "branch_office": null,
+    "head_office": null,
     "body": {
       "talent": {
         "id": 2148523,
@@ -430,6 +508,8 @@
     "vacancy_title": "Atendente Hospedagem Jr. IBIS BUDGET GUARULHOS (Cód. 3208)",
     "senior_vacancy_id": "undefined",
     "recrutei_vacancy_id": "126763",
+    "branch_office": null,
+    "head_office": null,
     "body": {
       "talent": {
         "id": 5134974,
@@ -446,6 +526,8 @@
     "vacancy_title": "Atendente Hospedagem Jr. - São José dos Pinhais/PR (Cód. 3300)",
     "senior_vacancy_id": "undefined",
     "recrutei_vacancy_id": "127114",
+    "branch_office": null,
+    "head_office": null,
     "body": {
       "talent": {
         "id": 6949695,
@@ -462,6 +544,8 @@
     "vacancy_title": "Arrumadeira(o) Jr. - 12x36 - Grand Mercure Curitiba Rayon (Cód. 3089)",
     "senior_vacancy_id": "undefined",
     "recrutei_vacancy_id": "123764",
+    "branch_office": null,
+    "head_office": null,
     "body": {
       "talent": {
         "id": 7223049,
@@ -478,6 +562,8 @@
     "vacancy_title": "Auxiliar Cozinha (Cód. 2230)",
     "senior_vacancy_id": "undefined",
     "recrutei_vacancy_id": "126871",
+    "branch_office": null,
+    "head_office": null,
     "body": {
       "talent": {
         "id": 4156947,
@@ -494,6 +580,8 @@
     "vacancy_title": "Arrumadeira(o) Jr. (Cód. 3254)",
     "senior_vacancy_id": "undefined",
     "recrutei_vacancy_id": "128698",
+    "branch_office": null,
+    "head_office": null,
     "body": {
       "talent": {
         "id": 7060026,
@@ -510,6 +598,8 @@
     "vacancy_title": "Auxiliar Almoxarifado Ibis santos valongo  (Cód. 3220)",
     "senior_vacancy_id": "undefined",
     "recrutei_vacancy_id": "126751",
+    "branch_office": null,
+    "head_office": null,
     "body": {
       "talent": {
         "id": 3332340,
@@ -526,6 +616,8 @@
     "vacancy_title": "Auxiliar Almoxarifado Ibis santos valongo  (Cód. 3220)",
     "senior_vacancy_id": "undefined",
     "recrutei_vacancy_id": "126751",
+    "branch_office": null,
+    "head_office": null,
     "body": {
       "talent": {
         "id": 7111787,
@@ -542,6 +634,8 @@
     "vacancy_title": "Recepcionista Jr. - Bilíngue - 12x36 - Grand Mercure Curitiba Rayon (Cód. 2241)",
     "senior_vacancy_id": "undefined",
     "recrutei_vacancy_id": "126876",
+    "branch_office": null,
+    "head_office": null,
     "body": {
       "talent": {
         "id": 1232901,
@@ -558,6 +652,8 @@
     "vacancy_title": "Assistente Comercial - Corporativo (Cód. 2992)",
     "senior_vacancy_id": "undefined",
     "recrutei_vacancy_id": "122204",
+    "branch_office": null,
+    "head_office": null,
     "body": {
       "talent": {
         "id": 1480149,
@@ -574,6 +670,8 @@
     "vacancy_title": "Atendente Hospedagem Jr. (Cód. 2450)",
     "senior_vacancy_id": "undefined",
     "recrutei_vacancy_id": "126748",
+    "branch_office": null,
+    "head_office": null,
     "body": {
       "talent": {
         "id": 2506559,
@@ -590,6 +688,8 @@
     "vacancy_title": "Auxiliar Manutenção (Cód. 2874)",
     "senior_vacancy_id": "undefined",
     "recrutei_vacancy_id": "119917",
+    "branch_office": null,
+    "head_office": null,
     "body": {
       "talent": {
         "id": 5871327,
@@ -606,6 +706,8 @@
     "vacancy_title": "Atendente Hospedagem Jr. IBIS BUDGET GUARULHOS (Cód. 3208)",
     "senior_vacancy_id": "undefined",
     "recrutei_vacancy_id": "126763",
+    "branch_office": null,
+    "head_office": null,
     "body": {
       "talent": {
         "id": 7211619,
@@ -622,6 +724,8 @@
     "vacancy_title": "Arrumadeira(o) Jr. (Cód. 3265)",
     "senior_vacancy_id": "undefined",
     "recrutei_vacancy_id": "128846",
+    "branch_office": null,
+    "head_office": null,
     "body": {
       "talent": {
         "id": 7215639,
@@ -638,6 +742,8 @@
     "vacancy_title": "Cozinheiro Jr. (Cód. 2803)",
     "senior_vacancy_id": "undefined",
     "recrutei_vacancy_id": "118680",
+    "branch_office": null,
+    "head_office": null,
     "body": {
       "talent": {
         "id": 6991013,
@@ -654,6 +760,8 @@
     "vacancy_title": "Atendente Hospedagem Jr. - São José dos Pinhais/PR (Cód. 3300)",
     "senior_vacancy_id": "undefined",
     "recrutei_vacancy_id": "127114",
+    "branch_office": null,
+    "head_office": null,
     "body": {
       "talent": {
         "id": 7046097,
@@ -670,6 +778,8 @@
     "vacancy_title": "Recepcionista Jr. 12x36 - GRAND MERCURE CURITIBA RAYON (Cód. 2241)",
     "senior_vacancy_id": "undefined",
     "recrutei_vacancy_id": "126766",
+    "branch_office": null,
+    "head_office": null,
     "body": {
       "talent": {
         "id": 7211439,
@@ -686,6 +796,8 @@
     "vacancy_title": "Arrumadeira(o) Jr IBIS SANTOS VALONGO  (Cód. 3034)",
     "senior_vacancy_id": "undefined",
     "recrutei_vacancy_id": "122442",
+    "branch_office": null,
+    "head_office": null,
     "body": {
       "talent": {
         "id": 2515363,
@@ -702,6 +814,8 @@
     "vacancy_title": "Arrumadeira(o) Jr.- Ibis Pelotas (Cód. 3007)",
     "senior_vacancy_id": "undefined",
     "recrutei_vacancy_id": "121737",
+    "branch_office": null,
+    "head_office": null,
     "body": {
       "talent": {
         "id": 7219574,
@@ -718,6 +832,8 @@
     "vacancy_title": "Atendente A&B Jr. - Hotel Ibis Styles Belem Nazaré (Cód. 2818)",
     "senior_vacancy_id": "undefined",
     "recrutei_vacancy_id": "119116",
+    "branch_office": null,
+    "head_office": null,
     "body": {
       "talent": {
         "id": 7010720,
@@ -734,6 +850,8 @@
     "vacancy_title": "Recepcionista Jr. - Bilíngue - 12x36 - Grand Mercure Curitiba Rayon (Cód. 2241)",
     "senior_vacancy_id": "undefined",
     "recrutei_vacancy_id": "126876",
+    "branch_office": null,
+    "head_office": null,
     "body": {
       "talent": {
         "id": 3496311,
