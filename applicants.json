@@ -6012,21 +6012,5 @@
         }
       }
     }
-  },
-  {
-    "applicant": "janine castro",
-    "vacancy_title": "Atendente Hospedagem Jr. (Cód. 3348)",
-    "senior_vacancy_id": "undefined",
-    "recrutei_vacancy_id": "128748",
-    "body": {
-      "talent": {
-        "id": 142069,
-        "user": {
-          "name": "janine castro",
-          "email": "eujcastro@gmail.com",
-          "city": "São João de Meriti, RJ, Brasil"
-        }
-      }
-    }
   }
 ]
