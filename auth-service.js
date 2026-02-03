@@ -119,6 +119,7 @@ const AuthService = {
             // IDs de teste (externalIds)
             this.state.allowedCompanies.add('B353032E36B5408EAC4632458BA81E0A'); // Matriz
             this.state.allowedCompanies.add('C964EDC57CA24457AF6E4FB72C820EB0'); // Filial teste
+            this.state.allowedCompanies.add('366D2C34EDCC4B75ACF0230F60D7074B'); // Ibis Curitiba Aero (Evander)
             this.state.isSuperUser = true; // Mock sempre é superuser
             return;
         }
