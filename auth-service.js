@@ -278,21 +278,14 @@ const AuthService = {
 
         const companyExternalId = branchExternalId || headExternalId;
 
-        // Se não tiver externalId de filial, aplica regra especial para Matriz
+        // Se não tiver externalId de filial, bloqueia por segurança (Default Deny)
         if (!companyExternalId) {
-            // ID da Matriz Atrio Hoteis SA (Permite ver órfãos/incompletos)
-            const HEAD_OFFICE_ID = 'B353032E36B5408EAC4632458BA81E0A';
-            const isHeadOfficeAdmin = this.state.allowedCompanies.has(HEAD_OFFICE_ID);
-
-            if (isHeadOfficeAdmin) {
-                return true; // Matriz vê tudo, mesmo sem vínculo de filial
-            }
-
             // Log apenas uma vez para não spam
             if (!window._loggedMissingId) {
                 const candidateName = applicant.body?.talent?.user?.name || applicant.applicant || 'Desconhecido';
-                console.warn('⚠️ BLOQUEADO: Candidato sem externalId de filial no JSON (apenas Matriz pode ver):', {
-                    candidato: candidateName
+                console.warn('⚠️ BLOQUEADO: Candidato sem externalId de filial no JSON:', {
+                    candidato: candidateName,
+                    estrutura: applicant.body
                 });
                 window._loggedMissingId = true;
             }
