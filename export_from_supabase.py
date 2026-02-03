@@ -20,15 +20,21 @@ import os
 import subprocess
 from datetime import datetime
 from pathlib import Path
+from dotenv import load_dotenv
 from supabase import create_client, Client
 
+# Carregar variáveis de ambiente do arquivo .env
+load_dotenv()
+
 # ========== CONFIGURAÇÕES ==========
-# TODO: Preencher com as credenciais do Supabase
+# Preencher com as credenciais do Supabase
 SUPABASE_URL = os.getenv('SUPABASE_URL', 'https://seu-projeto.supabase.co')
 SUPABASE_KEY = os.getenv('SUPABASE_KEY', 'sua-chave-aqui')
 
-# Nome da tabela/view no Supabase (ajustar conforme ETL do Tiago)
-TABLE_NAME = 'vw_applicants'  # ou o nome que o Tiago usar
+# Configuração da tabela (conforme implementação do Tiago)
+SCHEMA_NAME = 'public'
+TABLE_NAME = 'audit_log'
+DETAILS_COLUMN = 'details'  # Coluna JSONB com os payloads dos candidatos
 
 # Diretório do projeto
 PROJECT_DIR = Path(__file__).parent
@@ -48,21 +54,44 @@ def connect_supabase() -> Client:
 
 def fetch_applicants(supabase: Client) -> list:
     """
-    Busca todos os candidatos do Supabase
+    Busca todos os candidatos do Supabase (tabela audit_log, coluna details)
     
-    IMPORTANTE: Ajustar a query conforme a estrutura do ETL do Tiago
+    A coluna 'details' contém o payload completo do candidato em formato JSONB
     """
-    print(f"📡 Buscando candidatos da tabela '{TABLE_NAME}'...")
+    print(f"📡 Buscando candidatos de '{SCHEMA_NAME}.{TABLE_NAME}' (coluna '{DETAILS_COLUMN}')...")
     
     try:
-        # Buscar todos os registros
-        # TODO: Ajustar os campos conforme a estrutura real
-        response = supabase.table(TABLE_NAME).select("*").execute()
+        # Buscar todos os registros da coluna details
+        # A coluna details já contém o payload completo (igual ao do Kaique)
+        response = supabase.table(TABLE_NAME).select(DETAILS_COLUMN).execute()
         
-        data = response.data
-        print(f"✅ {len(data)} candidatos encontrados")
+        if not response.data:
+            print("⚠️ Nenhum registro encontrado na tabela")
+            return []
         
-        return data
+        # Extrair os payloads da coluna details
+        applicants = []
+        for record in response.data:
+            details = record.get(DETAILS_COLUMN)
+            
+            if not details:
+                print("⚠️ Registro sem dados na coluna 'details', pulando...")
+                continue
+            
+            # O details já é o payload completo do candidato
+            # Estrutura esperada (igual ao Kaique):
+            # {
+            #   "body": {...},
+            #   "applicant": "Nome",
+            #   "vacancy_title": "Título",
+            #   "senior_vacancy_id": "uuid",
+            #   "recrutei_vacancy_id": "id"
+            # }
+            
+            applicants.append(details)
+        
+        print(f"✅ {len(applicants)} candidatos encontrados")
+        return applicants
         
     except Exception as e:
         print(f"❌ Erro ao buscar dados: {e}")
@@ -71,34 +100,56 @@ def fetch_applicants(supabase: Client) -> list:
 
 def transform_data(raw_data: list) -> list:
     """
-    Transforma os dados do Supabase para o formato esperado pelo visualizador
+    Valida e transforma os dados do Supabase
     
-    IMPORTANTE: Ajustar conforme a estrutura que o ETL do Tiago salva
+    Como os dados já vêm no formato correto da coluna 'details',
+    apenas validamos os campos críticos
     """
-    print("🔄 Transformando dados...")
+    print("🔄 Validando dados...")
     
-    transformed = []
+    valid_applicants = []
+    warnings = []
     
-    for record in raw_data:
-        # TODO: Ajustar mapeamento conforme estrutura real do Supabase
-        # Este é um exemplo baseado na estrutura atual do applicants.json
+    for idx, applicant in enumerate(raw_data):
+        # Validar estrutura básica
+        if not isinstance(applicant, dict):
+            warnings.append(f"Registro {idx}: Não é um objeto JSON válido")
+            continue
         
-        applicant = {
-            "body": record.get("body", {}),  # Se o Tiago salvar como JSONB
-            "applicant": record.get("applicant_name"),
-            "vacancy_title": record.get("vacancy_title"),
-            "senior_vacancy_id": record.get("senior_vacancy_id"),
-            "recrutei_vacancy_id": record.get("recrutei_vacancy_id")
-        }
+        # Validar campos obrigatórios
+        if not applicant.get("applicant"):
+            warnings.append(f"Registro {idx}: Campo 'applicant' ausente")
+            continue
         
-        # Validar que tem os campos essenciais para RBAC
-        if not applicant["body"].get("branchOffice", {}).get("externalId"):
-            print(f"⚠️ Candidato sem externalId: {applicant['applicant']}")
+        if not applicant.get("vacancy_title"):
+            warnings.append(f"Registro {idx}: Campo 'vacancy_title' ausente")
+            continue
         
-        transformed.append(applicant)
+        # Validar campo CRÍTICO para RBAC
+        body = applicant.get("body", {})
+        branch_external_id = body.get("branchOffice", {}).get("externalId")
+        head_external_id = body.get("headOffice", {}).get("externalId")
+        
+        if not branch_external_id and not head_external_id:
+            warnings.append(
+                f"⚠️ Candidato '{applicant.get('applicant')}': "
+                f"Sem externalId (branchOffice ou headOffice). "
+                f"Este candidato NÃO será visível para ninguém!"
+            )
+        
+        valid_applicants.append(applicant)
     
-    print(f"✅ {len(transformed)} candidatos transformados")
-    return transformed
+    # Mostrar avisos
+    if warnings:
+        print(f"\n⚠️ {len(warnings)} avisos encontrados:")
+        for warning in warnings[:10]:  # Mostrar no máximo 10
+            print(f"   • {warning}")
+        if len(warnings) > 10:
+            print(f"   ... e mais {len(warnings) - 10} avisos")
+        print()
+    
+    print(f"✅ {len(valid_applicants)} candidatos válidos")
+    return valid_applicants
 
 
 def save_json(data: list, filepath: Path):
