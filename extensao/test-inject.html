@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Teste de Injeção da Extensão</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+
+        .status {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        .info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+
+        pre {
+            background: #fff;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🔍 Teste de Injeção da Extensão Atrio</h1>
+
+    <div id="status"></div>
+
+    <h2>Instruções:</h2>
+    <ol>
+        <li>Abra uma aba com a Senior X e faça login</li>
+        <li>Volte para esta aba</li>
+        <li>Clique no botão abaixo</li>
+    </ol>
+
+    <button onclick="testExtension()" style="padding: 10px 20px; font-size: 16px; cursor: pointer;">
+        🧪 Testar Extensão
+    </button>
+
+    <div id="results"></div>
+
+    <script>
+        // Log inicial
+        console.log('🧪 Página de teste carregada');
+        console.log('📍 URL atual:', window.location.href);
+
+        // Verificar se extensão já está presente
+        window.addEventListener('DOMContentLoaded', () => {
+            checkExtensionStatus();
+        });
+
+        // Escutar evento da extensão
+        window.addEventListener('senior-context-ready', (event) => {
+            console.log('✅ Evento senior-context-ready recebido!', event.detail);
+            checkExtensionStatus();
+        });
+
+        function checkExtensionStatus() {
+            const statusDiv = document.getElementById('status');
+            const resultsDiv = document.getElementById('results');
+
+            // Verificar localStorage
+            const userInfo = localStorage.getItem('SENIOR_USER_INFO');
+            const token = localStorage.getItem('SENIOR_TOKEN');
+
+            let html = '<h2>📊 Status Atual:</h2>';
+
+            // Status da extensão
+            if (typeof chrome !== 'undefined' && chrome.runtime) {
+                html += '<div class="status success">✅ API chrome.runtime disponível (extensão pode estar ativa)</div>';
+            } else {
+                html += '<div class="status error">❌ API chrome.runtime NÃO disponível</div>';
+            }
+
+            // Status do SENIOR_USER_INFO
+            if (userInfo) {
+                try {
+                    const parsed = JSON.parse(userInfo);
+                    const username = parsed.data?.username || 'N/A';
+                    html += `<div class="status success">✅ SENIOR_USER_INFO encontrado<br>Usuário: <strong>${username}</strong></div>`;
+                    html += `<pre>${JSON.stringify(parsed, null, 2)}</pre>`;
+                } catch (e) {
+                    html += '<div class="status error">❌ SENIOR_USER_INFO existe mas está malformado</div>';
+                }
+            } else {
+                html += '<div class="status error">❌ SENIOR_USER_INFO NÃO encontrado no localStorage</div>';
+            }
+
+            // Status do SENIOR_TOKEN
+            if (token) {
+                html += `<div class="status success">✅ SENIOR_TOKEN encontrado<br>Token: <code>${token.substring(0, 30)}...</code></div>`;
+            } else {
+                html += '<div class="status error">❌ SENIOR_TOKEN NÃO encontrado no localStorage</div>';
+            }
+
+            // Instruções
+            if (!userInfo || !token) {
+                html += '<div class="status info">ℹ️ A extensão pode não estar injetando dados. Certifique-se de:<br>';
+                html += '1. Estar acessando via GitHub Pages (https://forbizgetwork.github.io/atrio/)<br>';
+                html += '2. Ter feito login na Senior X em outra aba<br>';
+                html += '3. A extensão estar instalada e ativa</div>';
+            }
+
+            resultsDiv.innerHTML = html;
+        }
+
+        function testExtension() {
+            console.log('🧪 Testando comunicação com extensão...');
+
+            if (typeof chrome === 'undefined' || !chrome.runtime) {
+                alert('❌ chrome.runtime não disponível. A extensão pode não estar instalada.');
+                return;
+            }
+
+            try {
+                chrome.runtime.sendMessage({ action: 'getSeniorContext' }, (response) => {
+                    console.log('📨 Resposta da extensão:', response);
+
+                    if (chrome.runtime.lastError) {
+                        console.error('❌ Erro:', chrome.runtime.lastError);
+                        alert('❌ Erro ao comunicar: ' + chrome.runtime.lastError.message);
+                        return;
+                    }
+
+                    if (response && response.userInfo && response.token) {
+                        alert('✅ Resposta recebida! Verificando dados...');
+                        checkExtensionStatus();
+                    } else {
+                        alert('⚠️ Extensão respondeu mas sem dados. Faça login na Senior X primeiro.');
+                    }
+                });
+            } catch (e) {
+                console.error('❌ Erro ao testar:', e);
+                alert('❌ Erro: ' + e.message);
+            }
+        }
+
+        // Auto-check a cada 2 segundos
+        setInterval(checkExtensionStatus, 2000);
+    </script>
+</body>
+
+</html>

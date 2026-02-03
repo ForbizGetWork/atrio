@@ -13,8 +13,17 @@
         }
 
         if (!response || !response.userInfo || !response.token) {
-            console.warn('[Atrio Extension] ⚠️ Nenhum contexto da Senior encontrado');
-            showWarning('Faça login na Senior X em outra aba primeiro!');
+            console.warn('[Atrio Extension] ⚠️ Contexto incompleto/ausente:', response);
+
+            let missing = [];
+            if (!response) missing.push('Resposta do Background vazia');
+            else {
+                if (!response.userInfo) missing.push('UserInfo');
+                if (!response.token) missing.push('Token');
+            }
+
+            console.warn('[Atrio Extension] ❌ Faltando:', missing.join(', '));
+            showWarning(`Contexto incompleto (${missing.join(', ')}). Recarregue a página da Senior X!`);
             return;
         }
 
