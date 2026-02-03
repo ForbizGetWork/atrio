@@ -269,15 +269,6 @@ const AuthService = {
         */
 
         // Busca o externalId da filial (UUID que vem da API Senior)
-
-        // DEBUG: Verificar estrutura exata
-        if (!window._debugKeysLogged) {
-            console.log('🔍 DEBUG Applicant Structure:', applicant);
-            console.log('🔍 DEBUG Applicant Keys:', Object.keys(applicant));
-            console.log('🔍 DEBUG branch_office:', applicant.branch_office);
-            window._debugKeysLogged = true;
-        }
-
         // Suporte para múltiplos formatos (snake_case na raiz ou camelCase no body)
         const branchObj = applicant.branch_office || applicant.branchOffice || applicant.body?.branchOffice;
         const headObj = applicant.head_office || applicant.headOffice || applicant.body?.headOffice;
@@ -287,14 +278,21 @@ const AuthService = {
 
         const companyExternalId = branchExternalId || headExternalId;
 
-        // Se não tiver externalId de filial, bloqueia por segurança (Default Deny)
+        // Se não tiver externalId de filial, aplica regra especial para Matriz
         if (!companyExternalId) {
+            // ID da Matriz Atrio Hoteis SA (Permite ver órfãos/incompletos)
+            const HEAD_OFFICE_ID = 'B353032E36B5408EAC4632458BA81E0A';
+            const isHeadOfficeAdmin = this.state.allowedCompanies.has(HEAD_OFFICE_ID);
+
+            if (isHeadOfficeAdmin) {
+                return true; // Matriz vê tudo, mesmo sem vínculo de filial
+            }
+
             // Log apenas uma vez para não spam
             if (!window._loggedMissingId) {
                 const candidateName = applicant.body?.talent?.user?.name || applicant.applicant || 'Desconhecido';
-                console.warn('⚠️ BLOQUEADO: Candidato sem externalId de filial no JSON:', {
-                    candidato: candidateName,
-                    estrutura: applicant.body
+                console.warn('⚠️ BLOQUEADO: Candidato sem externalId de filial no JSON (apenas Matriz pode ver):', {
+                    candidato: candidateName
                 });
                 window._loggedMissingId = true;
             }
