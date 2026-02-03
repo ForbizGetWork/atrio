@@ -177,9 +177,15 @@ def transform_data(raw_data: list) -> list:
             continue
         
         # Validar campo CRÍTICO para RBAC
-        body = applicant.get("body", {})
-        branch_external_id = body.get("branchOffice", {}).get("externalId")
-        head_external_id = body.get("headOffice", {}).get("externalId")
+        # Estratégia resiliente: busca em raiz (snake/camel) e dentro de body
+        body = applicant.get("body") or {}
+        if not isinstance(body, dict): body = {} # Garantir que é dict
+
+        branch_data = applicant.get("branch_office") or applicant.get("branchOffice") or body.get("branchOffice")
+        head_data = applicant.get("head_office") or applicant.get("headOffice") or body.get("headOffice")
+        
+        branch_external_id = branch_data.get("externalId") if branch_data else None
+        head_external_id = head_data.get("externalId") if head_data else None
         
         if branch_external_id or head_external_id:
             stats['with_external_id'] += 1
@@ -197,15 +203,11 @@ def transform_data(raw_data: list) -> list:
             "vacancy_title": applicant.get("vacancy_title"),
             "senior_vacancy_id": applicant.get("senior_vacancy_id"),
             "recrutei_vacancy_id": applicant.get("recrutei_vacancy_id"),
+            # Preservar dados de estrutura na raiz para facilitar JS
+            "branch_office": branch_data, 
+            "head_office": head_data,
             "body": {}
         }
-        
-        # Manter apenas branchOffice e headOffice (essenciais para RBAC)
-        if "branchOffice" in body:
-            clean_item["body"]["branchOffice"] = body["branchOffice"]
-        
-        if "headOffice" in body:
-            clean_item["body"]["headOffice"] = body["headOffice"]
         
         # Adicionar dados básicos do talento
         if "talent" in body:
@@ -218,6 +220,9 @@ def transform_data(raw_data: list) -> list:
                     "city": talent.get("user", {}).get("city")
                 }
             }
+        elif "talent" in applicant: # Talvez talent esteja na raiz também?
+             # (Opcional: implementar se necessário, mas Evander tem talent no body)
+             pass
         
         valid_applicants.append(clean_item)
     
