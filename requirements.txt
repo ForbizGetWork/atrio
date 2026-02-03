@@ -3,7 +3,7 @@
 # Core
 python-dotenv==1.0.0
 
-# Supabase (para exportação automática)
-supabase==2.3.0
+# PostgreSQL (conexão direta ao Supabase)
+psycopg2-binary==2.9.9
 
 # Git automation já usa subprocess (built-in)

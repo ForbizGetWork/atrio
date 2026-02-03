@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-Script de Exportação Automática - Supabase → GitHub Pages
+Script de Exportação Automática - PostgreSQL (Supabase) → GitHub Pages
 
 Fluxo:
-1. Conecta no Supabase
-2. Busca candidatos da view/tabela
+1. Conecta no PostgreSQL (Supabase) diretamente
+2. Busca candidatos da tabela audit_log
 3. Exporta para applicants.json
 4. Converte para applicants-data.js
 5. Faz commit e push para GitHub
@@ -21,15 +21,19 @@ import subprocess
 from datetime import datetime
 from pathlib import Path
 from dotenv import load_dotenv
-from supabase import create_client, Client
+import psycopg2
+from psycopg2.extras import RealDictCursor
 
 # Carregar variáveis de ambiente do arquivo .env
 load_dotenv()
 
 # ========== CONFIGURAÇÕES ==========
-# Preencher com as credenciais do Supabase
-SUPABASE_URL = os.getenv('SUPABASE_URL', 'https://seu-projeto.supabase.co')
-SUPABASE_KEY = os.getenv('SUPABASE_KEY', 'sua-chave-aqui')
+# Credenciais PostgreSQL (Supabase)
+DB_HOST = os.getenv('DB_HOST')
+DB_PORT = os.getenv('DB_PORT', '5432')
+DB_USER = os.getenv('DB_USER', 'postgres')
+DB_NAME = os.getenv('DB_NAME', 'postgres')
+DB_PASSWORD = os.getenv('DB_PASSWORD')
 
 # Configuração da tabela (conforme implementação do Tiago)
 SCHEMA_NAME = 'public'
@@ -40,67 +44,93 @@ DETAILS_COLUMN = 'details'  # Coluna JSONB com os payloads dos candidatos
 PROJECT_DIR = Path(__file__).parent
 
 
-def connect_supabase() -> Client:
-    """Conecta no Supabase"""
-    print("🔌 Conectando no Supabase...")
+def connect_database():
+    """Conecta no PostgreSQL (Supabase)"""
+    print("🔌 Conectando no PostgreSQL (Supabase)...")
+    
+    # Validar credenciais
+    if not DB_HOST or not DB_PASSWORD:
+        raise ValueError(
+            "Credenciais não configuradas! "
+            "Verifique o arquivo .env (DB_HOST, DB_PASSWORD)"
+        )
+    
     try:
-        supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+        conn = psycopg2.connect(
+            host=DB_HOST,
+            port=DB_PORT,
+            user=DB_USER,
+            database=DB_NAME,
+            password=DB_PASSWORD,
+            connect_timeout=10
+        )
         print("✅ Conectado com sucesso!")
-        return supabase
+        return conn
+        
+    except psycopg2.OperationalError as e:
+        print(f"❌ Erro ao conectar no banco: {e}")
+        print("\n💡 Dicas:")
+        print("   • Verifique se DB_HOST está correto")
+        print("   • Verifique se DB_PASSWORD está correto")
+        print("   • Verifique se o IP está liberado no Supabase")
+        raise
     except Exception as e:
-        print(f"❌ Erro ao conectar: {e}")
+        print(f"❌ Erro inesperado: {e}")
         raise
 
 
-def fetch_applicants(supabase: Client) -> list:
+def fetch_applicants(conn) -> list:
     """
-    Busca todos os candidatos do Supabase (tabela audit_log, coluna details)
+    Busca todos os candidatos do PostgreSQL (tabela audit_log, coluna details)
     
     A coluna 'details' contém o payload completo do candidato em formato JSONB
     """
     print(f"📡 Buscando candidatos de '{SCHEMA_NAME}.{TABLE_NAME}' (coluna '{DETAILS_COLUMN}')...")
     
     try:
-        # Buscar todos os registros da coluna details
-        # A coluna details já contém o payload completo (igual ao do Kaique)
-        response = supabase.table(TABLE_NAME).select(DETAILS_COLUMN).execute()
+        # Usar cursor que retorna dicionários
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
         
-        if not response.data:
+        # Query SQL
+        query = f"""
+            SELECT {DETAILS_COLUMN}
+            FROM {SCHEMA_NAME}.{TABLE_NAME}
+            WHERE {DETAILS_COLUMN} IS NOT NULL
+        """
+        
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        cursor.close()
+        
+        if not rows:
             print("⚠️ Nenhum registro encontrado na tabela")
             return []
         
         # Extrair os payloads da coluna details
         applicants = []
-        for record in response.data:
-            details = record.get(DETAILS_COLUMN)
+        for row in rows:
+            details = row.get(DETAILS_COLUMN)
             
             if not details:
-                print("⚠️ Registro sem dados na coluna 'details', pulando...")
                 continue
             
-            # O details já é o payload completo do candidato
-            # Estrutura esperada (igual ao Kaique):
-            # {
-            #   "body": {...},
-            #   "applicant": "Nome",
-            #   "vacancy_title": "Título",
-            #   "senior_vacancy_id": "uuid",
-            #   "recrutei_vacancy_id": "id"
-            # }
-            
+            # O details já é o payload completo do candidato (já vem como dict do JSONB)
             applicants.append(details)
         
         print(f"✅ {len(applicants)} candidatos encontrados")
         return applicants
         
-    except Exception as e:
+    except psycopg2.Error as e:
         print(f"❌ Erro ao buscar dados: {e}")
+        raise
+    except Exception as e:
+        print(f"❌ Erro inesperado: {e}")
         raise
 
 
 def transform_data(raw_data: list) -> list:
     """
-    Valida e transforma os dados do Supabase
+    Valida e transforma os dados do banco
     
     Como os dados já vêm no formato correto da coluna 'details',
     apenas validamos os campos críticos
@@ -218,16 +248,18 @@ def git_commit_and_push():
 def main():
     """Função principal"""
     print("=" * 60)
-    print("🚀 EXPORTAÇÃO AUTOMÁTICA - SUPABASE → GITHUB PAGES")
+    print("🚀 EXPORTAÇÃO AUTOMÁTICA - POSTGRESQL → GITHUB PAGES")
     print("=" * 60)
     print()
     
+    conn = None
+    
     try:
-        # 1. Conectar no Supabase
-        supabase = connect_supabase()
+        # 1. Conectar no PostgreSQL
+        conn = connect_database()
         
         # 2. Buscar dados
-        raw_data = fetch_applicants(supabase)
+        raw_data = fetch_applicants(conn)
         
         if not raw_data:
             print("⚠️ Nenhum dado encontrado. Abortando.")
@@ -261,6 +293,12 @@ def main():
         print(f"❌ ERRO: {e}")
         print("=" * 60)
         raise
+        
+    finally:
+        # Fechar conexão
+        if conn:
+            conn.close()
+            print("\n🔌 Conexão fechada")
 
 
 if __name__ == '__main__':
