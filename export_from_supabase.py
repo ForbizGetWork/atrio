@@ -88,7 +88,7 @@ def fetch_applicants(conn) -> list:
     Isso é muito mais rápido do que scan completo em tabela sem índice
     """
     print(f"📡 Buscando candidatos vinculados de '{SCHEMA_NAME}.{TABLE_NAME}'...")
-    print(f"   (Buscando últimos 5000 registros, filtrando '{MESSAGE_FILTER}')")
+    print(f"   (Buscando registros dos últimos 30 dias, filtrando '{MESSAGE_FILTER}')")
     
     try:
         cursor = conn.cursor(cursor_factory=RealDictCursor)
@@ -102,8 +102,8 @@ def fetch_applicants(conn) -> list:
             SELECT id, message, {DETAILS_COLUMN}, created_at
             FROM {SCHEMA_NAME}.{TABLE_NAME}
             WHERE {DETAILS_COLUMN} IS NOT NULL
-            ORDER BY id DESC
-            LIMIT 5000
+            AND created_at > NOW() - INTERVAL '30 days'
+            ORDER BY created_at DESC
         """
         
         print(f"   Executando query otimizada...")
