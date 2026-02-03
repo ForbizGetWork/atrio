@@ -36,12 +36,13 @@ if (isExtensionSupported) {
     console.log('🌐 Ambiente compatível com extensão detectado. Aguardando extensão...');
 
     // Timeout de segurança: se extensão não responder em 3 segundos, continua mesmo assim
+    // Timeout de segurança aumentado para 6s
     const extensionTimeout = setTimeout(() => {
-        if (!isExtensionMode) {
-            console.warn('⏱️ Timeout: Extensão não respondeu em 3s. Iniciando sem dados da extensão...');
+        if (!isExtensionMode) { // Keeping isExtensionMode as extensionLoaded is not defined
+            console.warn('⏱️ Timeout: Extensão não respondeu em 6s. Iniciando sem dados da extensão...');
             initializeApp();
         }
-    }, 3000);
+    }, 6000);
 
     // Listener para evento da extensão
     window.addEventListener('senior-context-ready', (event) => {
