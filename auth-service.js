@@ -269,6 +269,15 @@ const AuthService = {
         */
 
         // Busca o externalId da filial (UUID que vem da API Senior)
+
+        // DEBUG: Verificar estrutura exata
+        if (!window._debugKeysLogged) {
+            console.log('🔍 DEBUG Applicant Structure:', applicant);
+            console.log('🔍 DEBUG Applicant Keys:', Object.keys(applicant));
+            console.log('🔍 DEBUG branch_office:', applicant.branch_office);
+            window._debugKeysLogged = true;
+        }
+
         // Suporte para múltiplos formatos (snake_case na raiz ou camelCase no body)
         const branchObj = applicant.branch_office || applicant.branchOffice || applicant.body?.branchOffice;
         const headObj = applicant.head_office || applicant.headOffice || applicant.body?.headOffice;
