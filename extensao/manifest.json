@@ -27,7 +27,8 @@
             "js": [
                 "visualizador-inject.js"
             ],
-            "run_at": "document_start"
+            "run_at": "document_start",
+            "all_frames": true
         },
         {
             "matches": [
@@ -37,7 +38,8 @@
                 "token-capturer.js"
             ],
             "run_at": "document_start",
-            "world": "MAIN"
+            "world": "MAIN",
+            "all_frames": true
         },
         {
             "matches": [
@@ -46,7 +48,8 @@
             "js": [
                 "token-listener.js"
             ],
-            "run_at": "document_start"
+            "run_at": "document_start",
+            "all_frames": true
         },
         {
             "matches": [
@@ -57,7 +60,8 @@
             "js": [
                 "visualizador-inject.js"
             ],
-            "run_at": "document_start"
+            "run_at": "document_start",
+            "all_frames": true
         }
     ],
     "icons": {
