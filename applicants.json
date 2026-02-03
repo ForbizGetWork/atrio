@@ -1510,59 +1510,5 @@
         }
       }
     }
-  },
-  {
-    "applicant": "Paulo Trindade",
-    "vacancy_title": "Atendente Hospedagem Jr. IBIS BUDGET GUARULHOS (Cód. 3208)",
-    "senior_vacancy_id": "undefined",
-    "recrutei_vacancy_id": "126763",
-    "branch_office": null,
-    "head_office": null,
-    "body": {
-      "talent": {
-        "id": 7211619,
-        "user": {
-          "name": "Paulo Trindade",
-          "email": "pt229557@gmail.com",
-          "city": "Não informado"
-        }
-      }
-    }
-  },
-  {
-    "applicant": "Laura Cristina",
-    "vacancy_title": "Arrumadeira(o) Jr. (Cód. 3265)",
-    "senior_vacancy_id": "undefined",
-    "recrutei_vacancy_id": "128846",
-    "branch_office": null,
-    "head_office": null,
-    "body": {
-      "talent": {
-        "id": 7215639,
-        "user": {
-          "name": "Laura Cristina",
-          "email": "santiagomartinelli581@gmail.com",
-          "city": "Manaus, AM, BR"
-        }
-      }
-    }
-  },
-  {
-    "applicant": "JUNIOR JOSÉ DÍAZ JIMENEZ",
-    "vacancy_title": "Cozinheiro Jr. (Cód. 2803)",
-    "senior_vacancy_id": "undefined",
-    "recrutei_vacancy_id": "118680",
-    "branch_office": null,
-    "head_office": null,
-    "body": {
-      "talent": {
-        "id": 6991013,
-        "user": {
-          "name": "JUNIOR JOSÉ DÍAZ JIMENEZ",
-          "email": "junior.diaz.jimenez.26650139zz@gmail.com",
-          "city": "Não informado"
-        }
-      }
-    }
   }
 ]
