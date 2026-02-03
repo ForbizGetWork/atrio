@@ -65,6 +65,20 @@
     "senior_vacancy_id": "undefined",
     "recrutei_vacancy_id": "127115",
     "body": {
+      "branchOffice": {
+        "id": "4b6e0fbf-6d18-45db-ac72-f60a2a8de177",
+        "code": 79,
+        "name": "RB - Grand Mercure Rayon",
+        "externalId": "2F5ECF1C0CCC47C3866370981F3C92DA",
+        "tradingName": "Gran Mercure"
+      },
+      "headOffice": {
+        "id": "5052eba3-b619-4ca7-a1de-0e150c2e8972",
+        "code": 79,
+        "name": "RB HOTELARIA LTDA",
+        "externalId": "C2CA4A1881524834839397ED9CDEDB72",
+        "tradingName": "Grand Mercure Rayon"
+      },
       "talent": {
         "id": 7227129,
         "user": {
