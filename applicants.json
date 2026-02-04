@@ -2068,41 +2068,5 @@
         }
       }
     }
-  },
-  {
-    "applicant": "Lourenza do Livramento Freitas",
-    "vacancy_title": "Arrumadeira(o) Jr. (Cód. 3254)",
-    "senior_vacancy_id": "undefined",
-    "recrutei_vacancy_id": "128698",
-    "branch_office": null,
-    "head_office": null,
-    "body": {
-      "talent": {
-        "id": 7152036,
-        "user": {
-          "name": "Lourenza do Livramento Freitas",
-          "email": "lourenza.livramento@gmail.com",
-          "city": "Caxias do Sul, RS, Brasil"
-        }
-      }
-    }
-  },
-  {
-    "applicant": "Lourenza do Livramento Freitas",
-    "vacancy_title": "Arrumadeira(o) Jr. (Cód. 3255)",
-    "senior_vacancy_id": "undefined",
-    "recrutei_vacancy_id": "128206",
-    "branch_office": null,
-    "head_office": null,
-    "body": {
-      "talent": {
-        "id": 7152036,
-        "user": {
-          "name": "Lourenza do Livramento Freitas",
-          "email": "lourenza.livramento@gmail.com",
-          "city": "Caxias do Sul, RS, Brasil"
-        }
-      }
-    }
   }
 ]
