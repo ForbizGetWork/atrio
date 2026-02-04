@@ -52,31 +52,13 @@ const AuthService = {
     },
 
     /**
-     * Tenta ler informações do contexto (Bridge ou localStorage)
+     * Tenta ler informações do localStorage (Extensão)
      */
     async tryLoadFromContext() {
-        console.log('🔍 AuthService: Buscando contexto de autenticação...');
-
-        // 1. Tentar Senior Library Bridge (Sem extensão)
-        if (window.SeniorBridge) {
-            console.log('🔄 AuthService: Tentando SeniorBridge...');
-            try {
-                const tokenData = await window.SeniorBridge.getToken();
-                if (tokenData && tokenData.access_token) {
-                    this.state.token = 'Bearer ' + tokenData.access_token;
-                    this.state.user = tokenData.username || 'usuario_senior'; // Fallback se username nulo
-                    console.log('✅ AuthService: Token obtido via SeniorBridge!');
-                    return; // Sucesso, não precisa olhar localStorage da extensão
-                }
-            } catch (e) {
-                console.warn('⚠️ SeniorBridge falhou:', e);
-            }
-        }
-
-        console.log('🔍 AuthService: Verificando localStorage (fallback extensão)...');
+        console.log('🔍 AuthService: Verificando localStorage (extensão)...');
 
         try {
-            // 2. Verificar SENIOR_USER_INFO (Legado/Extensão)
+            // Verificar SENIOR_USER_INFO
             const rawInfo = localStorage.getItem('SENIOR_USER_INFO');
             if (rawInfo) {
                 const info = JSON.parse(rawInfo);
@@ -85,7 +67,7 @@ const AuthService = {
                 this.state.tenant = data.tenantDomain || null;
             }
 
-            // 3. Verificar SENIOR_TOKEN (Legado/Extensão)
+            // Verificar SENIOR_TOKEN
             const seniorToken = localStorage.getItem('SENIOR_TOKEN');
             if (seniorToken) {
                 this.state.token = seniorToken;
