@@ -1,0 +1,28 @@
+{
+  "name": "atrio",
+  "version": "1.0.0",
+  "description": "",
+  "main": "applicants-data.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ForbizGetWork/atrio.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ForbizGetWork/atrio/issues"
+  },
+  "homepage": "https://github.com/ForbizGetWork/atrio#readme",
+  "devDependencies": {
+    "@seniorsistemas/senior-platform-data": "^5.4.1",
+    "webpack": "^5.105.0",
+    "webpack-cli": "^6.0.1"
+  }
+}

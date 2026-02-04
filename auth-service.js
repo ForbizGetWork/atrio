@@ -23,33 +23,31 @@ const AuthService = {
         try {
             console.log('🔐 AuthService: Iniciando...');
 
-            // 1. Tentar contexto real (Senior X ou Extensão)
-            this.tryLoadFromContext();
+            // 1. Tentar contexto real (Senior X Library ou Extensão)
+            await this.tryLoadFromContext();
 
             // 2. Validação do Contexto
             if (!this.state.user) {
-                console.warn('⚠️ AuthService: Nenhum usuário encontrado. Usando MOCK completo.');
+                console.warn('⚠️ AuthService: Nenhum usuário encontrado (Bridge/LocalStorage falharam). Usando MOCK.');
                 this.state.isMockMode = true;
-                this.state.user = '087305836087'; // Mock para testes
+                this.state.user = '087305836087'; // Mock fallback
                 this.state.token = this.config.mockToken;
             } else {
                 console.log(`✅ AuthService: Usuário detectado: ${this.state.user}`);
 
-                // Se temos usuário mas não temos token, usar fallback
                 if (!this.state.token) {
-                    console.warn('⚠️ AuthService: Token não encontrado. Usando token de fallback para chamadas API.');
                     this.state.token = this.config.mockToken;
-                    this.state.isMockMode = true; // Marca como mock pois não é um token real
+                    this.state.isMockMode = true;
                 }
             }
 
-            // 3. Buscar roles (se não estiver em modo mock completo)
+            // 3. Buscar roles
             await this.fetchUserRoles();
 
-            // 4. Buscar filtros de abrangência (filiais permitidas)
+            // 4. Buscar filtros
             const filters = await this.fetchRoleFilters();
 
-            // 5. Configurar permissões baseadas nos filtros
+            // 5. Configurar permissões
             await this.setupPermissions(filters);
 
             return true;
@@ -60,51 +58,47 @@ const AuthService = {
     },
 
     /**
-     * Tenta ler informações do localStorage da Senior
+     * Tenta ler informações do contexto (Bridge ou localStorage)
      */
-    tryLoadFromContext() {
-        console.log('🔍 AuthService: Verificando localStorage...');
+    async tryLoadFromContext() {
+        console.log('🔍 AuthService: Buscando contexto de autenticação...');
+
+        // 1. Tentar Senior Library Bridge (Sem extensão)
+        if (window.SeniorBridge) {
+            console.log('🔄 AuthService: Tentando SeniorBridge...');
+            try {
+                const tokenData = await window.SeniorBridge.getToken();
+                if (tokenData && tokenData.access_token) {
+                    this.state.token = 'Bearer ' + tokenData.access_token;
+                    this.state.user = tokenData.username || 'usuario_senior'; // Fallback se username nulo
+                    console.log('✅ AuthService: Token obtido via SeniorBridge!');
+                    return; // Sucesso, não precisa olhar localStorage da extensão
+                }
+            } catch (e) {
+                console.warn('⚠️ SeniorBridge falhou:', e);
+            }
+        }
+
+        console.log('🔍 AuthService: Verificando localStorage (fallback extensão)...');
 
         try {
-            // 1. Verificar SENIOR_USER_INFO
+            // 2. Verificar SENIOR_USER_INFO (Legado/Extensão)
             const rawInfo = localStorage.getItem('SENIOR_USER_INFO');
-            console.log('📦 SENIOR_USER_INFO presente:', !!rawInfo);
-
             if (rawInfo) {
                 const info = JSON.parse(rawInfo);
                 const data = info.data || {};
-
-                // Tenta extrair o usuario (pode variar a estrutura)
                 this.state.user = data.username || data.subject || null;
                 this.state.tenant = data.tenantDomain || null;
-
-                console.log('👤 Usuário extraído:', this.state.user);
-                console.log('🏢 Tenant extraído:', this.state.tenant);
-                console.log('📄 User Info completo:', data);
-            } else {
-                console.warn('⚠️ SENIOR_USER_INFO não encontrado no localStorage!');
             }
 
-            // 2. Verificar SENIOR_TOKEN (injetado pela extensão)
+            // 3. Verificar SENIOR_TOKEN (Legado/Extensão)
             const seniorToken = localStorage.getItem('SENIOR_TOKEN');
-            console.log('🔑 SENIOR_TOKEN presente:', !!seniorToken);
-
             if (seniorToken) {
-                this.state.token = seniorToken; // Já vem com 'Bearer '
-                console.log('✅ Token capturado:', seniorToken.substring(0, 30) + '...');
-            } else {
-                console.warn('⚠️ SENIOR_TOKEN não encontrado no localStorage!');
+                this.state.token = seniorToken;
+                console.log('✅ AuthService: Token recuperado do localStorage');
             }
-
-            // 3. Resumo do estado atual
-            console.log('📊 Estado após leitura do localStorage:', {
-                user: this.state.user,
-                tenant: this.state.tenant,
-                hasToken: !!this.state.token
-            });
-
         } catch (e) {
-            console.error('❌ AuthService: Erro ao ler localStorage:', e);
+            console.error('❌ Erro ao ler localStorage:', e);
         }
     },
 
