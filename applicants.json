@@ -2104,23 +2104,5 @@
         }
       }
     }
-  },
-  {
-    "applicant": "Mayara Telman",
-    "vacancy_title": "Roupeiro - LK Design Hotel  (Cód. 3291)",
-    "senior_vacancy_id": "undefined",
-    "recrutei_vacancy_id": "127109",
-    "branch_office": null,
-    "head_office": null,
-    "body": {
-      "talent": {
-        "id": 2148523,
-        "user": {
-          "name": "Mayara Telman",
-          "email": "mayaratelman@outlook.com",
-          "city": "Campinas, SP, BR"
-        }
-      }
-    }
   }
 ]
