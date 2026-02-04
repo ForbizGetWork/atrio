@@ -27,19 +27,13 @@ const AuthService = {
             await this.tryLoadFromContext();
 
             // 2. Validação do Contexto
-            if (!this.state.user) {
-                console.warn('⚠️ AuthService: Nenhum usuário encontrado (Bridge/LocalStorage falharam). Usando MOCK.');
-                this.state.isMockMode = true;
-                this.state.user = '087305836087'; // Mock fallback
-                this.state.token = this.config.mockToken;
-            } else {
-                console.log(`✅ AuthService: Usuário detectado: ${this.state.user}`);
-
-                if (!this.state.token) {
-                    this.state.token = this.config.mockToken;
-                    this.state.isMockMode = true;
-                }
+            if (!this.state.user || !this.state.token) {
+                console.error('❌ AuthService: Falha na autenticação. Nenhum dado de usuário/token encontrado.');
+                console.error('   Certifique-se de que a aplicação está sendo acessada através do Senior X.');
+                return false; // Aborta inicialização
             }
+
+            console.log(`✅ AuthService: Usuário detectado: ${this.state.user}`);
 
             // 3. Buscar roles
             await this.fetchUserRoles();
