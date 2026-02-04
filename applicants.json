@@ -1690,23 +1690,5 @@
         }
       }
     }
-  },
-  {
-    "applicant": "Jair Espinosa Filho",
-    "vacancy_title": "Auxiliar Almoxarifado Ibis santos valongo  (Cód. 3220)",
-    "senior_vacancy_id": "undefined",
-    "recrutei_vacancy_id": "126751",
-    "branch_office": null,
-    "head_office": null,
-    "body": {
-      "talent": {
-        "id": 7111787,
-        "user": {
-          "name": "Jair Espinosa Filho",
-          "email": "jairefilho@gmail.com",
-          "city": "Santos, SP, Brasil"
-        }
-      }
-    }
   }
 ]
