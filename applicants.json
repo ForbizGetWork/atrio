@@ -4018,35 +4018,5 @@
         }
       }
     }
-  },
-  {
-    "applicant": "Giselly de Oliveira Santos",
-    "vacancy_title": "Auxiliar Almoxarifado Ibis santos valongo  (Cód. 3220)",
-    "senior_vacancy_id": "undefined",
-    "recrutei_vacancy_id": "126751",
-    "branch_office": {
-      "id": "dad6693e-6fa6-4138-b2df-e22adbdff572",
-      "code": 38,
-      "name": "ATRIO SA - Ibis Santos Valongo",
-      "externalId": "7733B08571024AA3B95BF2279FCCF044",
-      "tradingName": "Ibis Santos Valongo"
-    },
-    "head_office": {
-      "id": "e1e11a5f-c7a9-4f14-9410-aeef3d04a61c",
-      "code": 1,
-      "name": "ATRIO HOTEIS SA",
-      "externalId": "B353032E36B5408EAC4632458BA81E0A",
-      "tradingName": "Atrio Hoteis SA"
-    },
-    "body": {
-      "talent": {
-        "id": 3759690,
-        "user": {
-          "name": "Giselly de Oliveira Santos",
-          "email": "gisellylima06@icloud.com",
-          "city": "Não informado"
-        }
-      }
-    }
   }
 ]
