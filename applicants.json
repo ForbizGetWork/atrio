@@ -1,5 +1,35 @@
 [
   {
+    "applicant": "Lucas Pagnozzi",
+    "vacancy_title": "Arrumadeira(o) Jr. | NOVOTEL BATEL  (Cód. 2801)",
+    "senior_vacancy_id": "undefined",
+    "recrutei_vacancy_id": "119332",
+    "branch_office": {
+      "id": "31f17a02-aa15-4e93-9f98-d0dfc40fa9b1",
+      "code": 39,
+      "name": "ATRIO SA - Novotel Curitiba Batel",
+      "externalId": "FE2DB50713004B43AA65288954466B9C",
+      "tradingName": "Novotel Curitiba Batel"
+    },
+    "head_office": {
+      "id": "e1e11a5f-c7a9-4f14-9410-aeef3d04a61c",
+      "code": 1,
+      "name": "ATRIO HOTEIS SA",
+      "externalId": "B353032E36B5408EAC4632458BA81E0A",
+      "tradingName": "Atrio Hoteis SA"
+    },
+    "body": {
+      "talent": {
+        "id": 6942347,
+        "user": {
+          "name": "Lucas Pagnozzi",
+          "email": "lppagnozzi@gmail.com",
+          "city": "Curitiba, PR, BR"
+        }
+      }
+    }
+  },
+  {
     "applicant": "Jessica Rodrigues Machado Reis",
     "vacancy_title": "Atendente Hospedagem Jr. (Cód. 2463)",
     "senior_vacancy_id": "undefined",
